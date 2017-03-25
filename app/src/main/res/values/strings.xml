@@ -1,0 +1,37 @@
+<resources>
+    <string name="app_name">Pop Movies</string>
+    <string name="popular_movies">Pop Movies</string>
+    <string name="nanodegree_apps">My Nanodegree Apps!</string>
+    <string name="popular_movies_button">Popular Movies</string>
+    <string name="stock_hawk_button">Stock Hawk</string>
+    <string name="stock_hawk_button_toast">This button will launch Stock Hawk App!</string>
+    <string name="buildit_bigger_button">Build It Bigger</string>
+    <string name="buildit_bigger_button_toast">This button will launch Build It Bigger App!</string>
+    <string name="make_your_app_material_button">Make Your App Material</string>
+    <string name="make_your_app_material_button_toast">This button will launch Make Your App Material App!</string>
+    <string name="go_ubiquitous_button">Go Ubiquitous</string>
+    <string name="go_ubiquitous_button_toast">This button will launch Go Ubiquitous App!</string>
+    <string name="capstone_button">Capstone</string>
+    <string name="capstone_button_toast">This button will launch Capstone App!</string>
+    <string name="movie_db_api_key"></string>
+    <string name="movies_order_by_shared_preferences_key">orderBy</string>
+    <string name="movies_order_by_title">Order Movies</string>
+    <string name="movies_order_by_dialog_title">Order Movies By</string>
+    <string name="first_pref_list_entry">Most Popular</string>
+    <string name="second_pref_list_entry">Highest Rated</string>
+    <string name="prefDefaultValue">@string/first_pref_list_entry</string>
+    <string name="settings_menu">Settings</string>
+    <string name="movie_detail">Movie Detail</string>
+    <string name="movie_vote_average">%1$s/10</string>
+    <string name="trailers_text_view">Trailers</string>
+    <string name="reviews_text_view">User Reviews</string>
+    <string name="trailer_text_view">Trailer %1$s</string>
+    <string name="play_video">playVideo%1$s</string>
+    <string name="chooser_title">Open With</string>
+    <string name="share_trailer_title">Share Trailer With</string>
+    <string name="favorites">Favorites</string>
+    <string name="no_favorites_text">You don\'t have favorites</string>
+    <string name="no_trailer_share">There is no trailer to share</string>
+    <string name="no_internet_connection">You don\'t have internet connection</string>
+    <string name="retry">RETRY</string>
+</resources>

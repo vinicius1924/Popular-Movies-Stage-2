@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="text_view_text_size">20sp</dimen>
+    <dimen name="movie_title_text_size">34sp</dimen>
+    <dimen name="toolbar_shadow_height">4dp</dimen>
+    <dimen name="trailer_divider_height">1dp</dimen>
+    <dimen name="toolbar_title_left_padding">72dp</dimen>
+</resources>
