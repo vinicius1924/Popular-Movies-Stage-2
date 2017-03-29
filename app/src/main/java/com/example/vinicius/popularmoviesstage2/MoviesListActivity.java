@@ -2,6 +2,7 @@ package com.example.vinicius.popularmoviesstage2;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.CoordinatorLayout;
@@ -15,10 +16,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.example.vinicius.popularmoviesstage2.DTO.MovieDTO;
+import com.example.vinicius.popularmoviesstage2.database.MovieContract;
 import com.example.vinicius.popularmoviesstage2.server.ApiServices;
 import com.example.vinicius.popularmoviesstage2.server.GetMoviesResponse;
 import com.example.vinicius.popularmoviesstage2.utils.NetworkUtils;
@@ -27,38 +30,45 @@ import com.example.vinicius.popularmoviesstage2.utils.VolleyUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PopularMoviesActivity extends AppCompatActivity implements MoviesPostersRecyclerAdapter.ListItemClickListener, SettingsFragment.PreferenceChangedEventListener
+public class MoviesListActivity extends AppCompatActivity implements MoviesPostersRecyclerAdapter.ListItemClickListener,
+		  FavoritesRecyclerAdapter.FavoritesListItemClickListener,SettingsFragment.PreferenceChangedEventListener,
+		  android.app.LoaderManager.LoaderCallbacks<Cursor>
 {
 	private RecyclerView moviesPostersRecyclerView;
 	private MoviesPostersRecyclerAdapter moviesPostersRecyclerAdapter;
+	private FavoritesRecyclerAdapter favoritesRecyclerAdapter;
 	private CoordinatorLayout coordinatorLayout;
 	private List<MovieDTO> moviesList = new ArrayList<MovieDTO>();
 	private final String POPULARMOVIESACTIVITYTAG = getClass().getSimpleName();
 	private boolean requestsCanceled = false;
 	private Toolbar toolbar;
 	private Snackbar snackbar;
+	private TextView noFavoritesTextView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
+		Log.e(POPULARMOVIESACTIVITYTAG, "onCreate");
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_popular_movies);
+		setContentView(R.layout.activity_movies_list);
 
 		moviesPostersRecyclerView = (RecyclerView) findViewById(R.id.moviesPostersRecyclerView);
 		toolbar = (Toolbar) findViewById(R.id.toolbar);
 		coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
+		noFavoritesTextView = (TextView) findViewById(R.id.noFavoritesTextView);
 
 		setSupportActionBar(toolbar);
 
 		getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-		moviesPostersRecyclerView.setHasFixedSize(true);
-
 		moviesPostersRecyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns()));
 
-		moviesPostersRecyclerAdapter = new MoviesPostersRecyclerAdapter(this.getApplicationContext(), moviesList, this);
+		moviesPostersRecyclerView.setHasFixedSize(true);
 
-		moviesPostersRecyclerView.setAdapter(moviesPostersRecyclerAdapter);
+		/* Adapter usado pelo recycler view para mostrar os dados recebidos da internet */
+		moviesPostersRecyclerAdapter = new MoviesPostersRecyclerAdapter(this.getApplicationContext(), moviesList, this);
+		/* Adapter usado pelo recycler view para mostrar os dados do SQLite utilizando um cursor  */
+		favoritesRecyclerAdapter = new FavoritesRecyclerAdapter(this.getApplicationContext(), null, 0, this);
 
 		loadMoviesByPreference(getPreferenceValue(getResources().getString(R.string.movies_order_by_shared_preferences_key)));
 	}
@@ -66,8 +76,8 @@ public class PopularMoviesActivity extends AppCompatActivity implements MoviesPo
 	private int numberOfColumns() {
 		DisplayMetrics displayMetrics = new DisplayMetrics();
 		getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-		// You can change this divider to adjust the size of the poster
-		int widthDivider = 400;
+		// Esse valor deve ser ajustado de acordo com a largura do poster que será mostrado
+		int widthDivider = 185;
 		int width = displayMetrics.widthPixels;
 		int nColumns = width / widthDivider;
 		if (nColumns < 2) return 2;
@@ -77,6 +87,8 @@ public class PopularMoviesActivity extends AppCompatActivity implements MoviesPo
 	@Override
 	protected void onStart()
 	{
+		Log.e(POPULARMOVIESACTIVITYTAG, "onStart");
+
 		super.onStart();
 
 		if(requestsCanceled)
@@ -88,6 +100,7 @@ public class PopularMoviesActivity extends AppCompatActivity implements MoviesPo
 	@Override
 	protected void onResume()
 	{
+		Log.e(POPULARMOVIESACTIVITYTAG, "onResume");
 		super.onResume();
 	}
 
@@ -146,6 +159,14 @@ public class PopularMoviesActivity extends AppCompatActivity implements MoviesPo
 	{
 		MovieDTO movieDTO = moviesList.get(clickedItemIndex).clone();
 
+		Intent i = new Intent(this, MovieActivity.class);
+		i.putExtra(MovieDTO.PARCELABLE_KEY, movieDTO);
+		startActivity(i);
+	}
+
+	@Override
+	public void onFavoriteListItemClick(MovieDTO movieDTO)
+	{
 		Intent i = new Intent(this, MovieActivity.class);
 		i.putExtra(MovieDTO.PARCELABLE_KEY, movieDTO);
 		startActivity(i);
@@ -251,19 +272,78 @@ public class PopularMoviesActivity extends AppCompatActivity implements MoviesPo
 	{
 		if(preference.equals(getResources().getString(R.string.first_pref_list_entry)))
 		{
+			noFavoritesTextView.setVisibility(View.INVISIBLE);
+			RecyclerView.Adapter adapter = moviesPostersRecyclerView.getAdapter();
+
+			if((adapter == null) || (adapter instanceof FavoritesRecyclerAdapter))
+			{
+				moviesPostersRecyclerView.setAdapter(moviesPostersRecyclerAdapter);
+			}
+
 			loadPopularMoviesFromApi();
 		}
-		else
+
+		if(preference.equals(getResources().getString(R.string.second_pref_list_entry)))
 		{
+			noFavoritesTextView.setVisibility(View.INVISIBLE);
+			RecyclerView.Adapter adapter = moviesPostersRecyclerView.getAdapter();
+
+			if((adapter == null) || (adapter instanceof FavoritesRecyclerAdapter))
+			{
+				moviesPostersRecyclerView.setAdapter(moviesPostersRecyclerAdapter);
+			}
+
 			loadTopRatedMoviesFromApi();
+		}
+
+		if(preference.equals(getResources().getString(R.string.third_pref_list_entry)))
+		{
+			RecyclerView.Adapter adapter = moviesPostersRecyclerView.getAdapter();
+
+			if((adapter == null) || (adapter instanceof MoviesPostersRecyclerAdapter))
+			{
+				moviesPostersRecyclerView.setAdapter(favoritesRecyclerAdapter);
+				getLoaderManager().initLoader(0, null, this);
+			}
 		}
 	}
 
 	public String getPreferenceValue(String preferenceKey)
 	{
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-		String value = sharedPref.getString(preferenceKey, "");
+		String value = sharedPref.getString(preferenceKey, getResources().getString(R.string.first_pref_list_entry));
 
 		return value;
+	}
+
+	@Override
+	public android.content.Loader<Cursor> onCreateLoader(int id, Bundle args)
+	{
+		return new android.content.CursorLoader(this, MovieContract.MovieEntry.CONTENT_URI,
+				  null,
+				  null,
+				  null,
+				  null);
+	}
+
+	@Override
+	public void onLoadFinished(android.content.Loader<Cursor> loader, Cursor data)
+	{
+		if(data == null || !data.moveToFirst())
+		{
+			noFavoritesTextView.setVisibility(View.VISIBLE);
+		}
+		else
+		{
+			noFavoritesTextView.setVisibility(View.INVISIBLE);
+		}
+
+		favoritesRecyclerAdapter.swapCursor(data);
+	}
+
+	@Override
+	public void onLoaderReset(android.content.Loader<Cursor> loader)
+	{
+		favoritesRecyclerAdapter.swapCursor(null);
 	}
 }

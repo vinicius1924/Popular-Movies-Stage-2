@@ -48,7 +48,11 @@ public class MovieContract
 
 		public static final String TABLE_NAME = "movie";
 
+		public static final String COLUMN_POSTER = "movie_poster";
 		public static final String COLUMN_TITLE = "title";
+		public static final String COLUMN_RELEASE_DATE = "release_date";
+		public static final String COLUMN_USER_RATING = "user_rating";
+		public static final String COLUMN_SYNOPSIS = "synopsis";
 
 		/* Função para construir uma URI para encontrar um filme específico por seu id */
 		public static Uri buildMovieUri(long id) {

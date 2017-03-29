@@ -40,10 +40,17 @@ public class MovieDTO implements Parcelable, Cloneable
 
 	public String getPoster()
 	{
-		return "http://image.tmdb.org/t/p/w185/" + poster_path;
+		if(poster_path.startsWith("/data/data"))
+		{
+			return poster_path;
+		}
+		else
+		{
+			return "http://image.tmdb.org/t/p/w185/" + poster_path;
+		}
 	}
 
-	public void setPoster_path(String poster_path)
+	public void setPosterPath(String poster_path)
 	{
 		this.poster_path = poster_path;
 	}
@@ -53,9 +60,19 @@ public class MovieDTO implements Parcelable, Cloneable
 		return id;
 	}
 
+	public void setId(long id)
+	{
+		this.id = id;
+	}
+
 	public String getOverview()
 	{
 		return overview;
+	}
+
+	public void setOverview(String overview)
+	{
+		this.overview = overview;
 	}
 
 	public String getReleaseDate()
@@ -63,14 +80,29 @@ public class MovieDTO implements Parcelable, Cloneable
 		return release_date;
 	}
 
+	public void setReleaseDate(String release_date)
+	{
+		this.release_date = release_date;
+	}
+
 	public String getOriginalTitle()
 	{
 		return original_title;
 	}
 
+	public void setOriginalTitle(String original_title)
+	{
+		this.original_title = original_title;
+	}
+
 	public double getVoteAverage()
 	{
 		return vote_average;
+	}
+
+	public void setVoteAverage(double vote_average)
+	{
+		this.vote_average = vote_average;
 	}
 
 	@Override

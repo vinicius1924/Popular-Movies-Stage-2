@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.example.vinicius.popularmoviesstage2">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -9,8 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".PopularMoviesActivity">
+        <activity android:name=".MoviesListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -19,19 +21,21 @@
         </activity>
         <activity
             android:name=".MovieActivity"
-            android:parentActivityName=".PopularMoviesActivity">
+            android:parentActivityName=".MoviesListActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".PopularMoviesActivity">
+                android:value=".MoviesListActivity">
             </meta-data>
         </activity>
 
         <provider
             android:name=".database.MovieProvider"
-            android:authorities="com.example.vinicius.popularmoviesstage1"/>
+            android:authorities="com.example.vinicius.popularmoviesstage2"/>
 
-        <activity android:name=".FavoritesActivity">
-        </activity>
+        <service
+            android:name=".services.DownloadIntentService"
+            android:exported="false">
+        </service>
     </application>
 
 </manifest>

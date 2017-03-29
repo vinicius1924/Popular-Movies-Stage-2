@@ -6,7 +6,7 @@
     android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.vinicius.myappporftolio.popularmovies.PopularMoviesActivity">
+    tools:context="com.example.vinicius.popularmoviesstage2.MoviesListActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
@@ -41,5 +41,16 @@
         android:scrollbars="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:background="@android:color/black"/>
+
+    <TextView
+        android:id="@+id/noFavoritesTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/TextAppearance.AppCompat.Caption"
+        app:layout_anchor="@id/moviesPostersRecyclerView"
+        app:layout_anchorGravity="center"
+        android:text="@string/no_favorites_text"
+        android:textColor="@android:color/white"
+        android:visibility="invisible"/>
 
 </android.support.design.widget.CoordinatorLayout>

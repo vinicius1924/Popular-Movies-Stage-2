@@ -3,5 +3,6 @@
     <string-array name="prefListEntries">
         <item>@string/first_pref_list_entry</item>
         <item>@string/second_pref_list_entry</item>
+        <item>@string/third_pref_list_entry</item>
     </string-array>
 </resources>

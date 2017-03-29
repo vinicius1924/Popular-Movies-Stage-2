@@ -1,56 +1,74 @@
 package com.example.vinicius.popularmoviesstage2;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.ImageView;
 
-import java.util.List;
+import com.example.vinicius.popularmoviesstage2.DTO.MovieDTO;
+import com.example.vinicius.popularmoviesstage2.database.MovieContract;
+import com.squareup.picasso.Picasso;
+
+import java.io.File;
 
 /**
  * Created by vinicius on 19/03/17.
  */
 
-public class FavoritesRecyclerAdapter extends RecyclerView.Adapter<FavoritesRecyclerAdapter.CustomViewHolder>
+public class FavoritesRecyclerAdapter extends CursorRecyclerAdapter<FavoritesRecyclerAdapter.CustomViewHolder>
 {
-	private List<String> favoritesList;
-	private Context mContext;
+	private Context context;
+	private FavoritesListItemClickListener mOnClickListener;
 
-	public FavoritesRecyclerAdapter(Context mContext, List<String> moviesList)
+	public FavoritesRecyclerAdapter(Context context, Cursor c, int flags, FavoritesListItemClickListener mOnClickListener)
 	{
-		this.mContext = mContext;
-		this.favoritesList = moviesList;
+		super(context, c, flags);
+
+		this.context = context;
+		this.mOnClickListener = mOnClickListener;
+	}
+
+	public interface FavoritesListItemClickListener
+	{
+		void onFavoriteListItemClick(MovieDTO movieDTO);
 	}
 
 	@Override
-	public CustomViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
+	public void bindViewHolder(CustomViewHolder customViewHolder, Context context, Cursor cursor)
 	{
-		View view = LayoutInflater.from(parent.getContext()).inflate(android.R.layout.simple_list_item_1, parent, false);
+		MovieDTO movieDTO = new MovieDTO();
+		movieDTO.setId(cursor.getLong(cursor.getColumnIndex(MovieContract.MovieEntry._ID)));
+		movieDTO.setPosterPath(cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_POSTER)));
+		movieDTO.setOriginalTitle(cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_TITLE)));
+		movieDTO.setReleaseDate(cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_RELEASE_DATE)));
+		movieDTO.setVoteAverage(cursor.getDouble(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_USER_RATING)));
+		movieDTO.setOverview(cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_SYNOPSIS)));
+
+		String poster = cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_POSTER));
+
+		customViewHolder.bindMovie(movieDTO);
+
+		Picasso.with(context).load(new File(poster)).placeholder(R.drawable.image_placeholder)
+				  .into(customViewHolder.thumbnailImage);
+	}
+
+	@Override
+	public FavoritesRecyclerAdapter.CustomViewHolder createViewHolder(Context context, ViewGroup parent, int viewType)
+	{
+		View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.movies_recycler_view_layout, parent, false);
 
 		CustomViewHolder viewHolder = new CustomViewHolder(view);
 
 		return viewHolder;
 	}
 
-	@Override
-	public void onBindViewHolder(CustomViewHolder customViewHolder, int position)
-	{
-		String movieId = favoritesList.get(position);
-
-		customViewHolder.movieId.setText(movieId);
-	}
-
-	@Override
-	public int getItemCount()
-	{
-		return (null != favoritesList ? favoritesList.size() : 0);
-	}
-
 	class CustomViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
 	{
-		protected TextView movieId;
+		protected ImageView thumbnailImage;
+		protected MovieDTO movie;
 
 		public CustomViewHolder(View itemView)
 		{
@@ -58,12 +76,17 @@ public class FavoritesRecyclerAdapter extends RecyclerView.Adapter<FavoritesRecy
 
 			itemView.setOnClickListener(this);
 
-			this.movieId = (TextView) itemView.findViewById(android.R.id.text1);
+			this.thumbnailImage = (ImageView) itemView.findViewById(R.id.thumbnail);
+		}
+
+		public void bindMovie(MovieDTO movie) {
+			this.movie = movie;
 		}
 
 		@Override
 		public void onClick(View view)
 		{
+			mOnClickListener.onFavoriteListItemClick(movie);
 		}
 	}
 }

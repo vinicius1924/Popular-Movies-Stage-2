@@ -8,8 +8,8 @@
         android:entryValues="@array/prefListEntries"
         android:defaultValue="@string/prefDefaultValue"/>
 
-    <Preference android:title="Favorites" >
-        <intent android:targetPackage="com.example.vinicius.popularmoviesstage2"
-                android:targetClass="com.example.vinicius.popularmoviesstage2.FavoritesActivity"/>
-    </Preference>
+    <!--<Preference android:title="Favorites" >-->
+        <!--<intent android:targetPackage="com.example.vinicius.popularmoviesstage2"-->
+                <!--android:targetClass="com.example.vinicius.popularmoviesstage2.FavoritesActivity"/>-->
+    <!--</Preference>-->
 </PreferenceScreen>

@@ -33,10 +33,12 @@ import com.example.vinicius.popularmoviesstage2.database.MovieContract;
 import com.example.vinicius.popularmoviesstage2.server.ApiServices;
 import com.example.vinicius.popularmoviesstage2.server.GetReviewsResponse;
 import com.example.vinicius.popularmoviesstage2.server.GetVideosResponse;
+import com.example.vinicius.popularmoviesstage2.services.DownloadIntentService;
 import com.example.vinicius.popularmoviesstage2.utils.NetworkUtils;
 import com.example.vinicius.popularmoviesstage2.utils.VolleyUtils;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -95,7 +97,16 @@ public class MovieActivity extends AppCompatActivity implements View.OnClickList
 		movieDTO = bundle.getParcelable(MovieDTO.PARCELABLE_KEY);
 
 		movieTitle.setText(movieDTO.getOriginalTitle());
-		Picasso.with(this).load(movieDTO.getPoster()).into(moviePoster);
+
+		if(movieDTO.getPoster().startsWith("/data/data"))
+		{
+			Picasso.with(this).load(new File(movieDTO.getPoster())).into(moviePoster);
+		}
+		else
+		{
+			Picasso.with(this).load(movieDTO.getPoster()).into(moviePoster);
+		}
+
 		movieReleaseDate.setText(movieDTO.getReleaseDate());
 		movieVoteAverage.setText(String.format(getResources().getString(R.string.movie_vote_average),
 				  String.valueOf(movieDTO.getVoteAverage())));
@@ -189,6 +200,10 @@ public class MovieActivity extends AppCompatActivity implements View.OnClickList
 	{
 		switch(item.getItemId())
 		{
+			case android.R.id.home:
+				onBackPressed();
+				return true;
+
 			case R.id.menu_item_share:
 				if(!youtubeTrailers.isEmpty())
 				{
@@ -411,7 +426,7 @@ public class MovieActivity extends AppCompatActivity implements View.OnClickList
 					{
 						view.setSelected(false);
 
-						deleteMovieFromLocalDatabase(movieDTO.getId());
+						deleteMovieFromLocalDatabase(movieDTO.getId(), movieDTO.getPoster());
 					}
 					else
 					{
@@ -446,9 +461,22 @@ public class MovieActivity extends AppCompatActivity implements View.OnClickList
 		}
 	}
 
-	public void deleteMovieFromLocalDatabase(long id)
+	public void deleteMovieFromLocalDatabase(long id, String posterPath)
 	{
+		String poster = posterPath;
+
 		ContentResolver resolver = getContentResolver();
+
+		if(posterPath.startsWith("http"))
+		{
+			/*
+			 * O método "getFilesDir()" retorna o mesmo caminho que o método "openFileOutput()" utilizado no service
+			 * DownloadIntentService para salvar a imagem
+			 */
+			poster = getFilesDir() + "/" + movieDTO.getPoster().substring(movieDTO.getPoster().lastIndexOf("/") + 1);
+		}
+
+		DownloadIntentService.startActionDelete(this, poster);
 
 		resolver.delete(Uri.withAppendedPath(MovieContract.MovieEntry.CONTENT_URI,
 				  String.valueOf(id)), null, null);
@@ -460,7 +488,19 @@ public class MovieActivity extends AppCompatActivity implements View.OnClickList
 		ContentValues movieValues = new ContentValues();
 
 		movieValues.put(MovieContract.MovieEntry._ID, movieDTO.getId());
+		/*
+		 * O método "getFilesDir()" retorna o mesmo caminho que o método "openFileOutput()" utilizado no service
+		 * DownloadIntentService para salvar a imagem
+		 */
+		movieValues.put(MovieContract.MovieEntry.COLUMN_POSTER, getFilesDir() + "/" +
+				  movieDTO.getPoster().substring(movieDTO.getPoster().lastIndexOf("/") + 1));
 		movieValues.put(MovieContract.MovieEntry.COLUMN_TITLE, movieDTO.getOriginalTitle());
+		movieValues.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, movieDTO.getReleaseDate());
+		movieValues.put(MovieContract.MovieEntry.COLUMN_USER_RATING, String.valueOf(movieDTO.getVoteAverage()));
+		movieValues.put(MovieContract.MovieEntry.COLUMN_SYNOPSIS, movieDTO.getOverview());
+
+		DownloadIntentService.startActionDownload(this, movieDTO.getPoster(),
+				  movieDTO.getPoster().substring(movieDTO.getPoster().lastIndexOf("/") + 1));
 
 		Uri insertedUri = resolver.insert(MovieContract.MovieEntry.CONTENT_URI, movieValues);
 	}
