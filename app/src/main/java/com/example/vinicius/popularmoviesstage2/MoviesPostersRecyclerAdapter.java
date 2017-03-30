@@ -49,7 +49,8 @@ public class MoviesPostersRecyclerAdapter extends RecyclerView.Adapter<MoviesPos
 	{
 		MovieDTO movieDTO = moviesList.get(position);
 
-		Picasso.with(mContext).load(movieDTO.getPoster()).placeholder(R.drawable.image_placeholder)
+		Picasso.with(mContext).load(movieDTO.getPoster(mContext.getResources().getBoolean(R.bool.smallestWidth600),
+				  mContext.getResources().getBoolean(R.bool.smallestWidth720))).placeholder(R.drawable.image_placeholder)
 				  .into(customViewHolder.thumbnailImage);
 	}
 

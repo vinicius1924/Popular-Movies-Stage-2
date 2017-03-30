@@ -22,7 +22,8 @@
             android:background="?attr/colorPrimary"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            app:layout_scrollFlags="scroll|enterAlways">
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:contentInsetStart="@dimen/toolbar_title_left_padding">
 
             <TextView
                 android:layout_width="wrap_content"

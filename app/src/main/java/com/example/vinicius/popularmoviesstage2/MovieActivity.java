@@ -98,13 +98,16 @@ public class MovieActivity extends AppCompatActivity implements View.OnClickList
 
 		movieTitle.setText(movieDTO.getOriginalTitle());
 
-		if(movieDTO.getPoster().startsWith("/data/data"))
+		if(movieDTO.getPoster(getResources().getBoolean(R.bool.smallestWidth600),
+				  getResources().getBoolean(R.bool.smallestWidth720)).startsWith("/data/data"))
 		{
-			Picasso.with(this).load(new File(movieDTO.getPoster())).into(moviePoster);
+			Picasso.with(this).load(new File(movieDTO.getPoster(getResources().getBoolean(R.bool.smallestWidth600),
+					  getResources().getBoolean(R.bool.smallestWidth720)))).into(moviePoster);
 		}
 		else
 		{
-			Picasso.with(this).load(movieDTO.getPoster()).into(moviePoster);
+			Picasso.with(this).load(movieDTO.getPoster(getResources().getBoolean(R.bool.smallestWidth600),
+					  getResources().getBoolean(R.bool.smallestWidth720))).into(moviePoster);
 		}
 
 		movieReleaseDate.setText(movieDTO.getReleaseDate());
@@ -426,7 +429,8 @@ public class MovieActivity extends AppCompatActivity implements View.OnClickList
 					{
 						view.setSelected(false);
 
-						deleteMovieFromLocalDatabase(movieDTO.getId(), movieDTO.getPoster());
+						deleteMovieFromLocalDatabase(movieDTO.getId(), movieDTO.getPoster(getResources().getBoolean(R.bool.smallestWidth600),
+								  getResources().getBoolean(R.bool.smallestWidth720)));
 					}
 					else
 					{
@@ -473,7 +477,9 @@ public class MovieActivity extends AppCompatActivity implements View.OnClickList
 			 * O método "getFilesDir()" retorna o mesmo caminho que o método "openFileOutput()" utilizado no service
 			 * DownloadIntentService para salvar a imagem
 			 */
-			poster = getFilesDir() + "/" + movieDTO.getPoster().substring(movieDTO.getPoster().lastIndexOf("/") + 1);
+			poster = getFilesDir() + "/" + movieDTO.getPoster(getResources().getBoolean(R.bool.smallestWidth600),
+					  getResources().getBoolean(R.bool.smallestWidth720)).substring(movieDTO.getPoster(getResources().getBoolean(R.bool.smallestWidth600),
+					  getResources().getBoolean(R.bool.smallestWidth720)).lastIndexOf("/") + 1);
 		}
 
 		DownloadIntentService.startActionDelete(this, poster);
@@ -493,14 +499,19 @@ public class MovieActivity extends AppCompatActivity implements View.OnClickList
 		 * DownloadIntentService para salvar a imagem
 		 */
 		movieValues.put(MovieContract.MovieEntry.COLUMN_POSTER, getFilesDir() + "/" +
-				  movieDTO.getPoster().substring(movieDTO.getPoster().lastIndexOf("/") + 1));
+				  movieDTO.getPoster(getResources().getBoolean(R.bool.smallestWidth600),
+							 getResources().getBoolean(R.bool.smallestWidth720)).substring(movieDTO.getPoster(getResources().getBoolean(R.bool.smallestWidth600),
+							 getResources().getBoolean(R.bool.smallestWidth720)).lastIndexOf("/") + 1));
 		movieValues.put(MovieContract.MovieEntry.COLUMN_TITLE, movieDTO.getOriginalTitle());
 		movieValues.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, movieDTO.getReleaseDate());
 		movieValues.put(MovieContract.MovieEntry.COLUMN_USER_RATING, String.valueOf(movieDTO.getVoteAverage()));
 		movieValues.put(MovieContract.MovieEntry.COLUMN_SYNOPSIS, movieDTO.getOverview());
 
-		DownloadIntentService.startActionDownload(this, movieDTO.getPoster(),
-				  movieDTO.getPoster().substring(movieDTO.getPoster().lastIndexOf("/") + 1));
+		DownloadIntentService.startActionDownload(this, movieDTO.getPoster(getResources().getBoolean(R.bool.smallestWidth600),
+				  getResources().getBoolean(R.bool.smallestWidth720)),
+				  movieDTO.getPoster(getResources().getBoolean(R.bool.smallestWidth600),
+							 getResources().getBoolean(R.bool.smallestWidth720)).substring(movieDTO.getPoster(getResources().getBoolean(R.bool.smallestWidth600),
+							 getResources().getBoolean(R.bool.smallestWidth720)).lastIndexOf("/") + 1));
 
 		Uri insertedUri = resolver.insert(MovieContract.MovieEntry.CONTENT_URI, movieValues);
 	}

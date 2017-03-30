@@ -39,7 +39,7 @@ public class MoviesListActivity extends AppCompatActivity implements MoviesPoste
 	private FavoritesRecyclerAdapter favoritesRecyclerAdapter;
 	private CoordinatorLayout coordinatorLayout;
 	private List<MovieDTO> moviesList = new ArrayList<MovieDTO>();
-	private final String POPULARMOVIESACTIVITYTAG = getClass().getSimpleName();
+	private final String MOVIESLISTACTIVITYTAG = getClass().getSimpleName();
 	private boolean requestsCanceled = false;
 	private Toolbar toolbar;
 	private Snackbar snackbar;
@@ -48,7 +48,7 @@ public class MoviesListActivity extends AppCompatActivity implements MoviesPoste
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
-		Log.e(POPULARMOVIESACTIVITYTAG, "onCreate");
+		Log.e(MOVIESLISTACTIVITYTAG, "onCreate");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_movies_list);
 
@@ -77,7 +77,19 @@ public class MoviesListActivity extends AppCompatActivity implements MoviesPoste
 		DisplayMetrics displayMetrics = new DisplayMetrics();
 		getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
 		// Esse valor deve ser ajustado de acordo com a largura do poster que será mostrado
+
 		int widthDivider = 185;
+
+		if(getResources().getBoolean(R.bool.smallestWidth600))
+		{
+			widthDivider = 342;
+		}
+
+		if(getResources().getBoolean(R.bool.smallestWidth720))
+		{
+			widthDivider = 500;
+		}
+
 		int width = displayMetrics.widthPixels;
 		int nColumns = width / widthDivider;
 		if (nColumns < 2) return 2;
@@ -87,7 +99,7 @@ public class MoviesListActivity extends AppCompatActivity implements MoviesPoste
 	@Override
 	protected void onStart()
 	{
-		Log.e(POPULARMOVIESACTIVITYTAG, "onStart");
+		Log.e(MOVIESLISTACTIVITYTAG, "onStart");
 
 		super.onStart();
 
@@ -100,7 +112,7 @@ public class MoviesListActivity extends AppCompatActivity implements MoviesPoste
 	@Override
 	protected void onResume()
 	{
-		Log.e(POPULARMOVIESACTIVITYTAG, "onResume");
+		Log.e(MOVIESLISTACTIVITYTAG, "onResume");
 		super.onResume();
 	}
 
@@ -115,7 +127,7 @@ public class MoviesListActivity extends AppCompatActivity implements MoviesPoste
 
 			if(numberOfRequests > 0)
 			{
-				RequestQueueSingleton.getInstance(getApplicationContext()).getRequestQueue().cancelAll(POPULARMOVIESACTIVITYTAG);
+				RequestQueueSingleton.getInstance(getApplicationContext()).getRequestQueue().cancelAll(MOVIESLISTACTIVITYTAG);
 
 				requestsCanceled = true;
 			}
@@ -126,7 +138,7 @@ public class MoviesListActivity extends AppCompatActivity implements MoviesPoste
 		}
 		catch(NoSuchFieldException e)
 		{
-			Log.e(POPULARMOVIESACTIVITYTAG, e.toString());
+			Log.e(MOVIESLISTACTIVITYTAG, e.toString());
 		}
 	}
 
@@ -190,7 +202,7 @@ public class MoviesListActivity extends AppCompatActivity implements MoviesPoste
 			@Override
 			public void onErrorResponse(VolleyError error)
 			{
-				Log.e(POPULARMOVIESACTIVITYTAG, error.getLocalizedMessage());
+				Log.e(MOVIESLISTACTIVITYTAG, error.getLocalizedMessage());
 			}
 		};
 
@@ -198,7 +210,7 @@ public class MoviesListActivity extends AppCompatActivity implements MoviesPoste
 		{
 			ApiServices<GetMoviesResponse> apiServices = new ApiServices<>();
 			apiServices.GetPopularMovies(successResponseRequestListener, errorResponseRequestListener,
-					  GetMoviesResponse.class, getApplicationContext(), POPULARMOVIESACTIVITYTAG);
+					  GetMoviesResponse.class, getApplicationContext(), MOVIESLISTACTIVITYTAG);
 		}
 		else
 		{
@@ -235,7 +247,7 @@ public class MoviesListActivity extends AppCompatActivity implements MoviesPoste
 			@Override
 			public void onErrorResponse(VolleyError error)
 			{
-				Log.e(POPULARMOVIESACTIVITYTAG, error.getLocalizedMessage());
+				Log.e(MOVIESLISTACTIVITYTAG, error.getLocalizedMessage());
 			}
 		};
 
@@ -243,7 +255,7 @@ public class MoviesListActivity extends AppCompatActivity implements MoviesPoste
 		{
 			ApiServices<GetMoviesResponse> apiServices = new ApiServices<>();
 			apiServices.GetTopRatedMovies(successResponseRequestListener, errorResponseRequestListener,
-					  GetMoviesResponse.class, getApplicationContext(), POPULARMOVIESACTIVITYTAG);
+					  GetMoviesResponse.class, getApplicationContext(), MOVIESLISTACTIVITYTAG);
 		}
 		else
 		{

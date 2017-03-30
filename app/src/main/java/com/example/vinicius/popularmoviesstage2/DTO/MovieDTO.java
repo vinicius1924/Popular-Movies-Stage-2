@@ -38,7 +38,7 @@ public class MovieDTO implements Parcelable, Cloneable
 		overview = in.readString();
 	}
 
-	public String getPoster()
+	public String getPoster(boolean smallestWidth600, boolean smallestWidth720)
 	{
 		if(poster_path.startsWith("/data/data"))
 		{
@@ -46,6 +46,16 @@ public class MovieDTO implements Parcelable, Cloneable
 		}
 		else
 		{
+			if(smallestWidth600)
+			{
+				return "http://image.tmdb.org/t/p/w342/" + poster_path;
+			}
+
+			if(smallestWidth720)
+			{
+				return "http://image.tmdb.org/t/p/w500/" + poster_path;
+			}
+
 			return "http://image.tmdb.org/t/p/w185/" + poster_path;
 		}
 	}
