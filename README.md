@@ -19,7 +19,7 @@ You will need to create an account on this link [The Movie DB](https://www.themo
 Clone the github repository
 
 ```
-$ git clone https://github.com/vinicius1924/Popular-Movies-Stage-1.git
+$ git clone https://github.com/vinicius1924/Popular-Movies-Stage-2.git
 ```
 
 Open Android Studio and click: File -> Open and choose the build.gradle file inside the project folder.
