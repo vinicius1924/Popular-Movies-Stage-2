@@ -35,4 +35,5 @@
     <string name="no_trailer_share">There is no trailer to share</string>
     <string name="no_internet_connection">You don\'t have internet connection</string>
     <string name="retry">RETRY</string>
+    <string name="order_by_menu">Order By</string>
 </resources>

@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MoviesListActivity extends AppCompatActivity implements MoviesPostersRecyclerAdapter.ListItemClickListener,
-		  FavoritesRecyclerAdapter.FavoritesListItemClickListener,SettingsFragment.PreferenceChangedEventListener,
+		  FavoritesRecyclerAdapter.FavoritesListItemClickListener,/*SettingsFragment.PreferenceChangedEventListener,*/
 		  android.app.LoaderManager.LoaderCallbacks<Cursor>
 {
 	private RecyclerView moviesPostersRecyclerView;
@@ -155,12 +155,31 @@ public class MoviesListActivity extends AppCompatActivity implements MoviesPoste
 	{
 		switch(item.getItemId())
 		{
-			case R.id.action_settings:
-				getFragmentManager().beginTransaction()
-						  .replace(android.R.id.content, new SettingsFragment())
-						  .addToBackStack("Settings")
-						  .commit();
+			case R.id.menuSortMostPopular:
+				setPreferenceValue(getResources().getString(R.string.movies_order_by_shared_preferences_key),
+						  item.getTitle().toString());
+				loadMoviesByPreference(item.getTitle().toString());
 				return true;
+
+			case R.id.menuSortHighestRated:
+				setPreferenceValue(getResources().getString(R.string.movies_order_by_shared_preferences_key),
+						  item.getTitle().toString());
+				loadMoviesByPreference(item.getTitle().toString());
+				return true;
+
+			case R.id.menuSortFavorites:
+				setPreferenceValue(getResources().getString(R.string.movies_order_by_shared_preferences_key),
+						  item.getTitle().toString());
+				loadMoviesByPreference(item.getTitle().toString());
+				return true;
+
+
+//			case R.id.action_settings:
+//				getFragmentManager().beginTransaction()
+//						  .replace(android.R.id.content, new SettingsFragment())
+//						  .addToBackStack("Settings")
+//						  .commit();
+//				return true;
 		}
 
 		return super.onOptionsItemSelected(item);
@@ -274,11 +293,11 @@ public class MoviesListActivity extends AppCompatActivity implements MoviesPoste
 		}
 	}
 
-	@Override
-	public void onPreferenceChangedEvent(String preference)
-	{
-		loadMoviesByPreference(preference);
-	}
+//	@Override
+//	public void onPreferenceChangedEvent(String preference)
+//	{
+//		loadMoviesByPreference(preference);
+//	}
 
 	public void loadMoviesByPreference(String preference)
 	{
@@ -318,6 +337,14 @@ public class MoviesListActivity extends AppCompatActivity implements MoviesPoste
 				getLoaderManager().initLoader(0, null, this);
 			}
 		}
+	}
+
+	public void setPreferenceValue(String preferenceKey, String preferenceValue)
+	{
+		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+		SharedPreferences.Editor editor = sharedPref.edit();
+		editor.putString(preferenceKey, preferenceValue);
+		editor.apply();
 	}
 
 	public String getPreferenceValue(String preferenceKey)

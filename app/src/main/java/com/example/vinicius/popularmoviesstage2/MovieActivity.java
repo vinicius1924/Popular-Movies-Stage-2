@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -52,7 +53,7 @@ public class MovieActivity extends AppCompatActivity implements View.OnClickList
 	private TextView movieSynopsis;
 	private ProgressBar progressBarTrailers;
 	private ProgressBar progressBarReviews;
-	private ImageButton favoriteButton;
+	//private ImageButton favoriteButton;
 	private final String MOVIEACTIVITYTAG = getClass().getSimpleName();
 	private final String TRAILERSREQUESTTAG = "TRAILERS";
 	private final String REVIEWSREQUESTTAG = "REVIEWS";
@@ -65,6 +66,7 @@ public class MovieActivity extends AppCompatActivity implements View.OnClickList
 	private ShareActionProvider mShareActionProvider;
 	private Snackbar snackbar;
 	private CoordinatorLayout coordinatorLayout;
+	private FloatingActionButton fab;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -82,10 +84,12 @@ public class MovieActivity extends AppCompatActivity implements View.OnClickList
 		linearLayoutReviews = (LinearLayout) findViewById(R.id.linearLayoutReviews);
 		progressBarTrailers = (ProgressBar) findViewById(R.id.progressBarTrailers);
 		progressBarReviews = (ProgressBar) findViewById(R.id.progressBarReviews);
-		favoriteButton = (ImageButton) findViewById(R.id.favoriteButton);
+		//favoriteButton = (ImageButton) findViewById(R.id.favoriteButton);
 		coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
+		fab = (FloatingActionButton) findViewById(R.id.fab);
+		fab.setOnClickListener(this);
 
-		favoriteButton.setOnClickListener(this);
+		//favoriteButton.setOnClickListener(this);
 
 		setSupportActionBar(toolbar);
 
@@ -120,11 +124,13 @@ public class MovieActivity extends AppCompatActivity implements View.OnClickList
 
 		if(movieCursor.moveToFirst())
 		{
-			favoriteButton.setSelected(true);
+			fab.setSelected(true);
+			//favoriteButton.setSelected(true);
 		}
 		else
 		{
-			favoriteButton.setSelected(false);
+			fab.setSelected(false);
+			//favoriteButton.setSelected(false);
 		}
 
 		loadMovieTrailers(movieDTO.getId());
@@ -424,7 +430,7 @@ public class MovieActivity extends AppCompatActivity implements View.OnClickList
 		{
 			switch(view.getId())
 			{
-				case R.id.favoriteButton:
+				case R.id.fab:
 					if(view.isSelected())
 					{
 						view.setSelected(false);

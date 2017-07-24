@@ -100,13 +100,6 @@
                         android:text="@string/movie_vote_average"
                         android:textColor="@color/secondary_text_color_light"/>
 
-                    <ImageButton
-                        android:id="@+id/favoriteButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/favorite_button"
-                        android:layout_marginTop="@dimen/activity_horizontal_margin"/>
-
                 </LinearLayout>
 
             </LinearLayout>
@@ -179,5 +172,15 @@
         </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/favorite_button"
+        app:elevation="6dp"
+        app:pressedTranslationZ="12dp"/>
 
 </android.support.design.widget.CoordinatorLayout>
