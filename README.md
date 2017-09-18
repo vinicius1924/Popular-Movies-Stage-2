@@ -26,6 +26,11 @@ Open Android Studio and click: File -> Open and choose the build.gradle file ins
 
 After that open the strings file and add the API key in the string with name "movie_db_api_key"
 
+### Branches
+
+This project has a branch called mvp, in this branch I used the MVP pattern showed in the image below
+
+![MVP Pattern](/images/MVP.png)
 
 ## Built With
 
