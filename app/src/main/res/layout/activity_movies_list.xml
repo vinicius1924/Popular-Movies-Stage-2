@@ -6,7 +6,7 @@
     android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.vinicius.popularmoviesstage2.MoviesListActivity">
+    tools:context="com.example.vinicius.popularmoviesstage2.view.movies_list_activity.MoviesListActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"

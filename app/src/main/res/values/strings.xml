@@ -13,7 +13,7 @@
     <string name="go_ubiquitous_button_toast">This button will launch Go Ubiquitous App!</string>
     <string name="capstone_button">Capstone</string>
     <string name="capstone_button_toast">This button will launch Capstone App!</string>
-    <string name="movie_db_api_key">114727fcab4f71df1ec5e7e2431c9481</string>
+    <string name="movie_db_api_key"></string>
     <string name="movies_order_by_shared_preferences_key">orderBy</string>
     <string name="movies_order_by_title">Order Movies</string>
     <string name="movies_order_by_dialog_title">Order Movies By</string>

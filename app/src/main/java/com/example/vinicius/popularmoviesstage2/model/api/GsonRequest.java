@@ -1,4 +1,4 @@
-package com.example.vinicius.popularmoviesstage2.server;
+package com.example.vinicius.popularmoviesstage2.model.api;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;

@@ -1,4 +1,4 @@
-package com.example.vinicius.popularmoviesstage2;
+package com.example.vinicius.popularmoviesstage2.view.movies_list_activity;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.example.vinicius.popularmoviesstage2.DTO.MovieDTO;
+import com.example.vinicius.popularmoviesstage2.R;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;

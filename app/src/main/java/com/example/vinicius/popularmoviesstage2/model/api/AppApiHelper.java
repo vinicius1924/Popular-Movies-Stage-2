@@ -1,4 +1,4 @@
-package com.example.vinicius.popularmoviesstage2.server;
+package com.example.vinicius.popularmoviesstage2.model.api;
 
 import android.content.Context;
 
@@ -8,19 +8,20 @@ import com.android.volley.Response;
 import com.android.volley.RetryPolicy;
 import com.example.vinicius.popularmoviesstage2.R;
 import com.example.vinicius.popularmoviesstage2.RequestQueueSingleton;
-import com.example.vinicius.popularmoviesstage2.interfaces.IApiServices;
+import com.example.vinicius.popularmoviesstage2.model.api.base.ApiHelper;
 
 import java.lang.reflect.Type;
 
 /**
- * Created by vinicius on 16/04/16.
+ * Created by vinicius on 13/09/17.
  */
-public class ApiServices<T> implements IApiServices<T>
+
+public class AppApiHelper<T> implements ApiHelper<T>
 {
 	@Override
 	public void GetPopularMovies(Response.Listener<T> successResponseRequestListener,
-										Response.ErrorListener errorResponseRequestListener, Class<T> clazz,
-										Context context, String requestTag)
+										  Response.ErrorListener errorResponseRequestListener, Class<T> clazz,
+										  Context context, String requestTag)
 	{
 		GsonRequest<T> myReq = new GsonRequest<T>(Request.Method.GET, "https://api.themoviedb.org/3/movie/popular?api_key="
 				  + context.getResources().getString(R.string.movie_db_api_key),
@@ -104,6 +105,4 @@ public class ApiServices<T> implements IApiServices<T>
 
 		RequestQueueSingleton.getInstance(context).addToRequestQueue(myReq);
 	}
-
-
 }

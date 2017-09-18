@@ -1,4 +1,4 @@
-package com.example.vinicius.popularmoviesstage2;
+package com.example.vinicius.popularmoviesstage2.view.movies_list_activity;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -8,7 +8,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.example.vinicius.popularmoviesstage2.CursorRecyclerAdapter;
 import com.example.vinicius.popularmoviesstage2.DTO.MovieDTO;
+import com.example.vinicius.popularmoviesstage2.R;
 import com.example.vinicius.popularmoviesstage2.database.MovieContract;
 import com.squareup.picasso.Picasso;
 
