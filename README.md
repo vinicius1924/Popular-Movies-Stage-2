@@ -28,7 +28,7 @@ After that open the strings file and add the API key in the string with name "mo
 
 ### Branches
 
-This project has a branch called mvp, in this branch I used the MVP pattern showed in the image below
+This project has a branch called mvp, in this branch I used the MVP pattern, showed in the image below, along with the [dagger](https://github.com/google/dagger) framework for dependency injection
 
 ![MVP Pattern](/images/MVP.png)
 
@@ -37,6 +37,7 @@ This project has a branch called mvp, in this branch I used the MVP pattern show
 * [gson](https://github.com/google/gson) - A Java serialization/deserialization library to convert Java Objects into JSON and back
 * [picasso](http://square.github.io/picasso/) - A powerful image downloading and caching library for Android
 * [volley](https://github.com/google/volley) - Used to make network requests
+* [dagger](https://github.com/google/dagger) - A fast dependency injector for Android and Java
 
 ## Images
 
