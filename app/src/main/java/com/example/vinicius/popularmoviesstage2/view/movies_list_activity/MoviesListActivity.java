@@ -7,9 +7,12 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.TextView;
 
 
@@ -66,6 +69,19 @@ public class MoviesListActivity extends BaseActivity implements MoviesPostersRec
 		setSupportActionBar(toolbar);
 
 		getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+		/*
+		 * LayoutAnimationController é usado para animar os filhos de um view group. Cada filho do viewgroup
+		 * usa a mesma animação, mas para cada um a animação começa em um tempo diferente. A implementação
+		 * padrão computa o delay da animação multiplicando uma constante em milisegundos pelo index de cada
+		 * filho dentro do view group
+		 */
+		LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(getApplicationContext(),
+				  R.anim.grid_layout_animation_from_bottom);
+
+
+		/* Seta o LayoutAnimationController que será utilizado para animar as views filhas desse viewgroup */
+		moviesPostersRecyclerView.setLayoutAnimation(animation);
 
 		moviesPostersRecyclerView.setLayoutManager(new GridLayoutManager(this, mPresenter.recyclerViewNumberOfColumns()));
 
@@ -180,6 +196,7 @@ public class MoviesListActivity extends BaseActivity implements MoviesPostersRec
 		}
 
 		favoritesRecyclerAdapter.swapCursor(data);
+		moviesPostersRecyclerView.scheduleLayoutAnimation();
 	}
 
 	@Override
@@ -199,6 +216,7 @@ public class MoviesListActivity extends BaseActivity implements MoviesPostersRec
 	{
 		if(preference.equals(getResources().getString(R.string.first_pref_list_entry)))
 		{
+			moviesList.clear();
 			RecyclerView.Adapter adapter = moviesPostersRecyclerView.getAdapter();
 
 			if((adapter == null) || (adapter instanceof FavoritesRecyclerAdapter))
@@ -209,6 +227,7 @@ public class MoviesListActivity extends BaseActivity implements MoviesPostersRec
 
 		if(preference.equals(getResources().getString(R.string.second_pref_list_entry)))
 		{
+			moviesList.clear();
 			RecyclerView.Adapter adapter = moviesPostersRecyclerView.getAdapter();
 
 			if((adapter == null) || (adapter instanceof FavoritesRecyclerAdapter))
@@ -237,17 +256,17 @@ public class MoviesListActivity extends BaseActivity implements MoviesPostersRec
 	@Override
 	public void getPopularMoviesResponse(GetMoviesResponse response)
 	{
-		moviesList.clear();
 		moviesList.addAll(response.getData().subList(0, response.getData().size()));
 		moviesPostersRecyclerAdapter.notifyDataSetChanged();
+		moviesPostersRecyclerView.scheduleLayoutAnimation();
 	}
 
 	@Override
 	public void getTopRatedMoviesResponse(GetMoviesResponse response)
 	{
-		moviesList.clear();
 		moviesList.addAll(response.getData().subList(0, response.getData().size()));
 		moviesPostersRecyclerAdapter.notifyDataSetChanged();
+		moviesPostersRecyclerView.scheduleLayoutAnimation();
 	}
 
 	@Override
