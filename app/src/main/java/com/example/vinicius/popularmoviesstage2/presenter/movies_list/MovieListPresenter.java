@@ -2,6 +2,11 @@ package com.example.vinicius.popularmoviesstage2.presenter.movies_list;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -24,6 +29,8 @@ import com.example.vinicius.popularmoviesstage2.view.movies_list_activity.Movies
 
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import static com.example.vinicius.popularmoviesstage2.utils.View.captureValues;
 
 /**
  * Created by vinicius on 12/09/17.
@@ -187,19 +194,49 @@ public class MovieListPresenter<V extends MoviesListMvpView> extends BasePresent
 	}
 
 	@Override
-	public void onRecyclerViewItemClick(MovieDTO movieDTO)
+	public void onRecyclerViewItemClick(MovieDTO movieDTO, View shredElementTransition)
 	{
 		Intent i = new Intent(context, MovieActivity.class);
 		i.putExtra(MovieDTO.PARCELABLE_KEY, movieDTO);
-		context.startActivity(i);
+		i.putExtra(MovieActivity.TRANSITION_NAME, ViewCompat.getTransitionName(shredElementTransition));
+
+		if(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
+		{
+			/* Manda para a activity que será chamada a posição e o tamanho iniciais da view que será animada */
+			i.putExtra(MovieActivity.SHARED_VIEW_INFO_EXTRA, captureValues(shredElementTransition));
+			context.startActivity(i);
+			/*
+			 * Especifica uma animação a ser executada na transição entre duas activities para dispositivos
+			 * com API < 21
+			 */
+			//((MoviesListActivity) getMvpView()).overridePendingTransition(R.anim.slide_right_in, R.anim.slide_left_out);
+			((MoviesListActivity) getMvpView()).overridePendingTransition(0, 0);
+		}
+		else
+		{
+			context.startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation((MoviesListActivity) getMvpView(), shredElementTransition, ViewCompat.getTransitionName(shredElementTransition)).toBundle());
+		}
 	}
 
 	@Override
-	public void onFavoriteRecyclerViewItemClick(MovieDTO movieDTO)
+	public void onFavoriteRecyclerViewItemClick(MovieDTO movieDTO, View shredElementTransition)
 	{
 		Intent i = new Intent(context, MovieActivity.class);
 		i.putExtra(MovieDTO.PARCELABLE_KEY, movieDTO);
-		context.startActivity(i);
+		i.putExtra(MovieActivity.TRANSITION_NAME, ViewCompat.getTransitionName(shredElementTransition));
+
+		if(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
+		{
+			i.putExtra(MovieActivity.SHARED_VIEW_INFO_EXTRA, captureValues(shredElementTransition));
+		}
+
+		context.startActivity(i, ActivityOptionsCompat.makeSceneTransitionAnimation((MoviesListActivity)getMvpView(),
+				  shredElementTransition, ViewCompat.getTransitionName(shredElementTransition)).toBundle());
+
+		if(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
+		{
+			((MoviesListActivity) getMvpView()).overridePendingTransition(R.anim.slide_right_in, R.anim.slide_left_out);
+		}
 	}
 
 

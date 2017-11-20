@@ -1,6 +1,7 @@
 package com.example.vinicius.popularmoviesstage2.view.movies_list_activity;
 
 import android.content.Context;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,7 +33,7 @@ public class MoviesPostersRecyclerAdapter extends RecyclerView.Adapter<MoviesPos
 
 	public interface ListItemClickListener
 	{
-		void onListItemClick(int clickedItemIndex);
+		void onListItemClick(int clickedItemIndex, ImageView thumbnailImage);
 	}
 
 	@Override
@@ -53,6 +54,8 @@ public class MoviesPostersRecyclerAdapter extends RecyclerView.Adapter<MoviesPos
 		Picasso.with(mContext).load(movieDTO.getPoster(mContext.getResources().getBoolean(R.bool.smallestWidth600),
 				  mContext.getResources().getBoolean(R.bool.smallestWidth720))).placeholder(R.drawable.image_placeholder)
 				  .into(customViewHolder.thumbnailImage);
+
+		ViewCompat.setTransitionName(customViewHolder.thumbnailImage, movieDTO.getOriginalTitle());
 	}
 
 	@Override
@@ -79,7 +82,7 @@ public class MoviesPostersRecyclerAdapter extends RecyclerView.Adapter<MoviesPos
 		{
 			int position = getAdapterPosition();
 
-			mOnClickListener.onListItemClick(position);
+			mOnClickListener.onListItemClick(position, thumbnailImage);
 		}
 	}
 }

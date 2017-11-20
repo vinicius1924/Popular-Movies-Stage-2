@@ -108,7 +108,7 @@ public class MoviePresenter<V extends MovieMvpView> extends BasePresenter<V> imp
 			@Override
 			public void onErrorResponse(VolleyError error)
 			{
-				Log.e(MovieActivity.MOVIEACTIVITYTAG, error.getLocalizedMessage());
+				Log.e(MovieActivity.MOVIEACTIVITYTAG, error.toString());
 			}
 		};
 

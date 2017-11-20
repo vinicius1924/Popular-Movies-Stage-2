@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    ObjectAnimator anima uma propriedade de um objeto alvo. Ele combina a habilidade de animar
+    o valor da propriedade e o tempo de duração de animação.
+
+    A propriedade que vamos animar deve deve ter uma função set(em camel case) na forma "set<PropertyName>()".
+    Por exemplo, se temos uma propriedade com o nome foo, então devemos ter um método setFoo().
+    Se especificarmos apenas o parametro valueTo, ele é assumido ser o valor final da animação.
+    Portanto, a propriedade do objeto que estamos animando deve ter uma função getter que será
+    usada para obter o valor inicial da animação. A função getter deve estar na forma "get<PropertyName>().
+    Por exemplo, se temos uma propriedade com o nome foo, então devemos ter um método getFoo()."
+
+    Dependendo da propriedade que se está animando deve ser chamado o método invalidate() da View
+    para forçar a tela a se redesenhar com os valores animados atualizados. isso é feito no callback
+    "onAnimationUpdate()"
+  -->
+<objectAnimator xmlns:android="http://schemas.android.com/apk/res/android"
+                android:propertyName="alpha"
+                android:valueType="floatType"
+                android:duration="@integer/anim_element_leaving_screen"
+                android:valueFrom="1"
+                android:valueTo="0" />

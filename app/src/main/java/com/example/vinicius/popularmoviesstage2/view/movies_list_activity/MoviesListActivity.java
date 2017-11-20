@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
@@ -160,17 +161,17 @@ public class MoviesListActivity extends BaseActivity implements MoviesPostersRec
 	}
 
 	@Override
-	public void onListItemClick(int clickedItemIndex)
+	public void onListItemClick(int clickedItemIndex, ImageView thumbnailImage)
 	{
 		MovieDTO movieDTO = moviesList.get(clickedItemIndex).clone();
 
-		mPresenter.onRecyclerViewItemClick(movieDTO);
+		mPresenter.onRecyclerViewItemClick(movieDTO, thumbnailImage);
 	}
 
 	@Override
-	public void onFavoriteListItemClick(MovieDTO movieDTO)
+	public void onFavoriteListItemClick(MovieDTO movieDTO, ImageView thumbnailImage)
 	{
-		mPresenter.onFavoriteRecyclerViewItemClick(movieDTO);
+		mPresenter.onFavoriteRecyclerViewItemClick(movieDTO, thumbnailImage);
 	}
 
 	@Override

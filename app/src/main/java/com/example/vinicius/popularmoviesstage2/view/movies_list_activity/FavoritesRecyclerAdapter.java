@@ -2,6 +2,7 @@ package com.example.vinicius.popularmoviesstage2.view.movies_list_activity;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,7 +36,7 @@ public class FavoritesRecyclerAdapter extends CursorRecyclerAdapter<FavoritesRec
 
 	public interface FavoritesListItemClickListener
 	{
-		void onFavoriteListItemClick(MovieDTO movieDTO);
+		void onFavoriteListItemClick(MovieDTO movieDTO, ImageView thumbnailImage);
 	}
 
 	@Override
@@ -55,6 +56,8 @@ public class FavoritesRecyclerAdapter extends CursorRecyclerAdapter<FavoritesRec
 
 		Picasso.with(context).load(new File(poster)).placeholder(R.drawable.image_placeholder)
 				  .into(customViewHolder.thumbnailImage);
+
+		ViewCompat.setTransitionName(customViewHolder.thumbnailImage, movieDTO.getOriginalTitle());
 	}
 
 	@Override
@@ -88,7 +91,7 @@ public class FavoritesRecyclerAdapter extends CursorRecyclerAdapter<FavoritesRec
 		@Override
 		public void onClick(View view)
 		{
-			mOnClickListener.onFavoriteListItemClick(movie);
+			mOnClickListener.onFavoriteListItemClick(movie, thumbnailImage);
 		}
 	}
 }

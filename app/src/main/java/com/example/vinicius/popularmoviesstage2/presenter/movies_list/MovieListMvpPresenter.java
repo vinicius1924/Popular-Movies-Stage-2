@@ -1,5 +1,8 @@
 package com.example.vinicius.popularmoviesstage2.presenter.movies_list;
 
+import android.view.View;
+import android.widget.ImageView;
+
 import com.example.vinicius.popularmoviesstage2.DTO.MovieDTO;
 import com.example.vinicius.popularmoviesstage2.presenter.base.MvpPresenter;
 import com.example.vinicius.popularmoviesstage2.view.movies_list_activity.MoviesListMvpView;
@@ -19,6 +22,6 @@ public interface MovieListMvpPresenter<V extends MoviesListMvpView> extends MvpP
 	boolean isRequestsCanceled();
 	void onMenuOptionItemSelected(String orderBy);
 	String getMenuOptionItemSelected();
-	void onRecyclerViewItemClick(MovieDTO movieDTO);
-	void onFavoriteRecyclerViewItemClick(MovieDTO movieDTO);
+	void onRecyclerViewItemClick(MovieDTO movieDTO, View shredElementTransition);
+	void onFavoriteRecyclerViewItemClick(MovieDTO movieDTO, View shredElementTransition);
 }
