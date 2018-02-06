@@ -1,19 +1,20 @@
 package com.example.vinicius.popularmoviesstage2.model.data_manager;
 
-import android.content.Context;
 import android.database.Cursor;
 
-import com.android.volley.Response;
 import com.example.vinicius.popularmoviesstage2.DTO.MovieDTO;
+import com.example.vinicius.popularmoviesstage2.model.api.GetMoviesResponse;
+import com.example.vinicius.popularmoviesstage2.model.api.GetReviewsResponse;
+import com.example.vinicius.popularmoviesstage2.model.api.GetVideosResponse;
 import com.example.vinicius.popularmoviesstage2.model.data_manager.base.DataManager;
 import com.example.vinicius.popularmoviesstage2.model.database.base.DbHelper;
 import com.example.vinicius.popularmoviesstage2.model.api.base.ApiHelper;
 import com.example.vinicius.popularmoviesstage2.model.preferences.base.PreferenceHelper;
 
-import java.lang.reflect.Type;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import retrofit2.Call;
 
 /**
  * Created by vinicius on 11/09/17.
@@ -53,40 +54,27 @@ public class AppDataManager implements DataManager
 	}
 
 	@Override
-	public void GetPopularMovies(Response.Listener successResponseRequestListener, Response.ErrorListener
-			  errorResponseRequestListener, Class clazz, Context context, String requestTag)
+	public Call<GetMoviesResponse> getPopularMovies()
 	{
-		mApiHelper.GetPopularMovies(successResponseRequestListener, errorResponseRequestListener, clazz,
-				  context, requestTag);
+		return mApiHelper.getPopularMovies();
 	}
 
 	@Override
-	public void GetTopRatedMovies(Response.Listener successResponseRequestListener, Response.ErrorListener
-			  errorResponseRequestListener, Class clazz, Context context, String requestTag)
+	public Call<GetMoviesResponse> getTopRatedMovies()
 	{
-		mApiHelper.GetTopRatedMovies(successResponseRequestListener, errorResponseRequestListener, clazz,
-				  context, requestTag);
+		return mApiHelper.getTopRatedMovies();
 	}
 
 	@Override
-	public void GetMovieDetails(Response.Listener successResponseRequestListener, Response.ErrorListener errorResponseRequestListener, Type type, Context context, String requestTag, long id)
+	public Call<GetVideosResponse> getMovieVideos(String id)
 	{
-		mApiHelper.GetMovieDetails(successResponseRequestListener, errorResponseRequestListener, type,
-				  context, requestTag, id);
+		return mApiHelper.getMovieVideos(id);
 	}
 
 	@Override
-	public void GetMovieVideos(Response.Listener successResponseRequestListener, Response.ErrorListener errorResponseRequestListener, Class clazz, Context context, String requestTag, long id)
+	public Call<GetReviewsResponse> getMovieReviews(String id)
 	{
-		mApiHelper.GetMovieVideos(successResponseRequestListener, errorResponseRequestListener, clazz,
-				  context, requestTag, id);
-	}
-
-	@Override
-	public void GetMovieReviews(Response.Listener successResponseRequestListener, Response.ErrorListener errorResponseRequestListener, Class clazz, Context context, String requestTag, long id)
-	{
-		mApiHelper.GetMovieReviews(successResponseRequestListener, errorResponseRequestListener, clazz,
-				  context, requestTag, id);
+		return mApiHelper.getMovieReviews(id);
 	}
 
 	@Override

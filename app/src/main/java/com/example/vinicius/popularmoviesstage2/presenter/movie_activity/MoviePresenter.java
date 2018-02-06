@@ -25,6 +25,9 @@ import com.example.vinicius.popularmoviesstage2.view.movie_activity.MovieMvpView
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+
 /**
  * Created by vinicius on 18/09/17.
  */
@@ -36,6 +39,8 @@ public class MoviePresenter<V extends MovieMvpView> extends BasePresenter<V> imp
 	@Named("ApplicationContext") Context applicationContext;
 	private MovieDTO movieDTO;
 	AppCompatActivity activity;
+	private Call<GetVideosResponse> callGetMovieVideos;
+	private Call<GetReviewsResponse> callGetMovieReviews;
 
 	@Inject
 	public MoviePresenter(@Named("ActivityContext")Context context,
@@ -60,28 +65,24 @@ public class MoviePresenter<V extends MovieMvpView> extends BasePresenter<V> imp
 	{
 		getMvpView().progressBarTrailerVisibility(View.VISIBLE);
 
-		final Response.Listener<GetVideosResponse> successResponseRequestListener = new Response.Listener<GetVideosResponse>()
-		{
-			@Override
-			public void onResponse(GetVideosResponse response)
-			{
-				getMvpView().loadMovieTrailersResponse(response);
-			}
-		};
-
-		final Response.ErrorListener errorResponseRequestListener = new Response.ErrorListener()
-		{
-			@Override
-			public void onErrorResponse(VolleyError error)
-			{
-				Log.e(MovieActivity.MOVIEACTIVITYTAG, error.getLocalizedMessage());
-			}
-		};
-
 		if(NetworkUtils.isOnline(context))
 		{
-			getDataManager().GetMovieVideos(successResponseRequestListener, errorResponseRequestListener,
-					  GetVideosResponse.class, context, ((MovieActivity)getMvpView()).TRAILERSREQUESTTAG, id);
+			callGetMovieVideos = getDataManager().getMovieVideos(String.valueOf(id));
+
+			callGetMovieVideos.enqueue(new Callback<GetVideosResponse>()
+			{
+				@Override
+				public void onResponse(Call<GetVideosResponse> call, retrofit2.Response<GetVideosResponse> response)
+				{
+					getMvpView().loadMovieTrailersResponse(response.body());
+				}
+
+				@Override
+				public void onFailure(Call<GetVideosResponse> call, Throwable t)
+				{
+					Log.e(MovieActivity.MOVIEACTIVITYTAG, t.getLocalizedMessage());
+				}
+			});
 		}
 		else
 		{
@@ -94,28 +95,24 @@ public class MoviePresenter<V extends MovieMvpView> extends BasePresenter<V> imp
 	{
 		getMvpView().progressBarReviewsVisibility(View.VISIBLE);
 
-		final Response.Listener<GetReviewsResponse> successResponseRequestListener = new Response.Listener<GetReviewsResponse>()
-		{
-			@Override
-			public void onResponse(GetReviewsResponse response)
-			{
-				getMvpView().loadMovieReviewsResponse(response);
-			}
-		};
-
-		final Response.ErrorListener errorResponseRequestListener = new Response.ErrorListener()
-		{
-			@Override
-			public void onErrorResponse(VolleyError error)
-			{
-				Log.e(MovieActivity.MOVIEACTIVITYTAG, error.getLocalizedMessage());
-			}
-		};
-
 		if(NetworkUtils.isOnline(context))
 		{
-			getDataManager().GetMovieReviews(successResponseRequestListener, errorResponseRequestListener,
-					  GetReviewsResponse.class, context, ((MovieActivity)getMvpView()).REVIEWSREQUESTTAG, id);
+			callGetMovieReviews = getDataManager().getMovieReviews(String.valueOf(id));
+
+			callGetMovieReviews.enqueue(new Callback<GetReviewsResponse>()
+			{
+				@Override
+				public void onResponse(Call<GetReviewsResponse> call, retrofit2.Response<GetReviewsResponse> response)
+				{
+					getMvpView().loadMovieReviewsResponse(response.body());
+				}
+
+				@Override
+				public void onFailure(Call<GetReviewsResponse> call, Throwable t)
+				{
+					Log.e(MovieActivity.MOVIEACTIVITYTAG, t.getLocalizedMessage());
+				}
+			});
 		}
 		else
 		{

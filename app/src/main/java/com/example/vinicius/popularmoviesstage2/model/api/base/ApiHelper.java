@@ -1,10 +1,11 @@
 package com.example.vinicius.popularmoviesstage2.model.api.base;
 
-import android.content.Context;
 
-import com.android.volley.Response;
+import com.example.vinicius.popularmoviesstage2.model.api.GetMoviesResponse;
+import com.example.vinicius.popularmoviesstage2.model.api.GetReviewsResponse;
+import com.example.vinicius.popularmoviesstage2.model.api.GetVideosResponse;
 
-import java.lang.reflect.Type;
+import retrofit2.Call;
 
 /**
  * Created by vinicius on 13/09/17.
@@ -12,23 +13,8 @@ import java.lang.reflect.Type;
 
 public interface ApiHelper<T>
 {
-	void GetPopularMovies(Response.Listener<T> successResponseRequestListener,
-								 Response.ErrorListener errorResponseRequestListener,
-								 Class<T> clazz, Context context, String requestTag);
-
-	void GetTopRatedMovies(Response.Listener<T> successResponseRequestListener,
-								  Response.ErrorListener errorResponseRequestListener,
-								  Class<T> clazz, Context context, String requestTag);
-
-	void GetMovieDetails(Response.Listener<T> successResponseRequestListener,
-								Response.ErrorListener errorResponseRequestListener,
-								Type type, Context context, String requestTag, long id);
-
-	void GetMovieVideos(Response.Listener<T> successResponseRequestListener,
-							  Response.ErrorListener errorResponseRequestListener,
-							  Class<T> clazz, Context context, String requestTag, long id);
-
-	void GetMovieReviews(Response.Listener<T> successResponseRequestListener,
-								Response.ErrorListener errorResponseRequestListener,
-								Class<T> clazz, Context context, String requestTag, long id);
+	Call<GetMoviesResponse> getPopularMovies();
+	Call<GetMoviesResponse> getTopRatedMovies();
+	Call<GetVideosResponse> getMovieVideos(String id);
+	Call<GetReviewsResponse> getMovieReviews(String id);
 }

@@ -25,6 +25,9 @@ import com.example.vinicius.popularmoviesstage2.view.movies_list_activity.Movies
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+
 /**
  * Created by vinicius on 12/09/17.
  */
@@ -35,6 +38,8 @@ public class MovieListPresenter<V extends MoviesListMvpView> extends BasePresent
 {
 	@Named("ActivityContext")Context context;
 	AppCompatActivity activity;
+	private Call<GetMoviesResponse> callPopularMoviesResponse = null;
+	private Call<GetMoviesResponse> callTopRatedMoviesResponse = null;
 
 
 	@Inject
@@ -53,29 +58,24 @@ public class MovieListPresenter<V extends MoviesListMvpView> extends BasePresent
 			getMvpView().noFavoritesTextViewVisibility(View.INVISIBLE);
 			getMvpView().changeAdapterAccordingToPreference(preference);
 
-
-			final Response.Listener<GetMoviesResponse> successResponseRequestListener = new Response.Listener<GetMoviesResponse>()
-			{
-				@Override
-				public void onResponse(GetMoviesResponse response)
-				{
-					getMvpView().getPopularMoviesResponse(response);
-				}
-			};
-
-			final Response.ErrorListener errorResponseRequestListener = new Response.ErrorListener()
-			{
-				@Override
-				public void onErrorResponse(VolleyError error)
-				{
-					Log.e(((MoviesListActivity)getMvpView()).MOVIESLISTACTIVITYTAG, error.getLocalizedMessage());
-				}
-			};
-
 			if(NetworkUtils.isOnline(context))
 			{
-				getDataManager().GetPopularMovies(successResponseRequestListener, errorResponseRequestListener,
-						  GetMoviesResponse.class, context, ((MoviesListActivity)getMvpView()).MOVIESLISTACTIVITYTAG);
+				callPopularMoviesResponse = getDataManager().getPopularMovies();
+
+				callPopularMoviesResponse.enqueue(new Callback<GetMoviesResponse>()
+				{
+					@Override
+					public void onResponse(Call<GetMoviesResponse> call, retrofit2.Response<GetMoviesResponse> response)
+					{
+						getMvpView().getPopularMoviesResponse(response.body());
+					}
+
+					@Override
+					public void onFailure(Call<GetMoviesResponse> call, Throwable t)
+					{
+						Log.e(((MoviesListActivity)getMvpView()).MOVIESLISTACTIVITYTAG, t.getLocalizedMessage());
+					}
+				});
 			}
 			else
 			{
@@ -88,28 +88,24 @@ public class MovieListPresenter<V extends MoviesListMvpView> extends BasePresent
 			getMvpView().noFavoritesTextViewVisibility(View.INVISIBLE);
 			getMvpView().changeAdapterAccordingToPreference(preference);
 
-			final Response.Listener<GetMoviesResponse> successResponseRequestListener = new Response.Listener<GetMoviesResponse>()
-			{
-				@Override
-				public void onResponse(GetMoviesResponse response)
-				{
-					getMvpView().getTopRatedMoviesResponse(response);
-				}
-			};
-
-			final Response.ErrorListener errorResponseRequestListener = new Response.ErrorListener()
-			{
-				@Override
-				public void onErrorResponse(VolleyError error)
-				{
-					Log.e(((MoviesListActivity)getMvpView()).MOVIESLISTACTIVITYTAG, error.getLocalizedMessage());
-				}
-			};
-
 			if(NetworkUtils.isOnline(context))
 			{
-				getDataManager().GetTopRatedMovies(successResponseRequestListener, errorResponseRequestListener,
-						  GetMoviesResponse.class, context, ((MoviesListActivity)getMvpView()).MOVIESLISTACTIVITYTAG);
+				callTopRatedMoviesResponse = getDataManager().getTopRatedMovies();
+
+				callTopRatedMoviesResponse.enqueue(new Callback<GetMoviesResponse>()
+				{
+					@Override
+					public void onResponse(Call<GetMoviesResponse> call, retrofit2.Response<GetMoviesResponse> response)
+					{
+						getMvpView().getTopRatedMoviesResponse(response.body());
+					}
+
+					@Override
+					public void onFailure(Call<GetMoviesResponse> call, Throwable t)
+					{
+						Log.e(((MoviesListActivity)getMvpView()).MOVIESLISTACTIVITYTAG, t.getLocalizedMessage());
+					}
+				});
 			}
 			else
 			{
@@ -129,7 +125,6 @@ public class MovieListPresenter<V extends MoviesListMvpView> extends BasePresent
 		DisplayMetrics displayMetrics = new DisplayMetrics();
 		activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
 		// Esse valor deve ser ajustado de acordo com a largura do poster que será mostrado
-
 		int widthDivider = 185;
 
 		if(context.getResources().getBoolean(R.bool.smallestWidth600))

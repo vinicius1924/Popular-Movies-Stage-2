@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import com.example.vinicius.popularmoviesstage2.MvpApp;
+import com.example.vinicius.popularmoviesstage2.dependency_injection.modules.NetworkModule;
 import com.example.vinicius.popularmoviesstage2.model.data_manager.base.DataManager;
 import com.example.vinicius.popularmoviesstage2.dependency_injection.modules.ApplicationModule;
 
@@ -26,7 +27,7 @@ import dagger.Component;
  * do tipo Context, Application e DataManager
  */
 @Singleton
-@Component(modules = ApplicationModule.class)
+@Component(modules = {ApplicationModule.class, NetworkModule.class})
 public interface ApplicationComponent
 {
 	/*

@@ -2,6 +2,7 @@ package com.example.vinicius.popularmoviesstage2;
 
 import android.app.Application;
 
+import com.example.vinicius.popularmoviesstage2.dependency_injection.modules.NetworkModule;
 import com.example.vinicius.popularmoviesstage2.model.data_manager.base.DataManager;
 import com.example.vinicius.popularmoviesstage2.dependency_injection.components.ApplicationComponent;
 import com.example.vinicius.popularmoviesstage2.dependency_injection.components.DaggerApplicationComponent;
@@ -27,7 +28,9 @@ public class MvpApp extends Application
 		super.onCreate();
 
 		mApplicationComponent = DaggerApplicationComponent.builder()
-				  .applicationModule(new ApplicationModule(this)).build();
+				  .applicationModule(new ApplicationModule(this))
+				  .networkModule(new NetworkModule("https://api.themoviedb.org/3/"))
+				  .build();
 
 		/*
 		 * Ao chamar o método inject do component ApplicationComponent o dagger vai procurar nos módulos

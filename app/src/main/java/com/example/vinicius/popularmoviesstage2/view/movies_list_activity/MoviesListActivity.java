@@ -101,7 +101,8 @@ public class MoviesListActivity extends BaseActivity implements MoviesPostersRec
 	{
 		super.onStop();
 
-		requestsCanceled = mPresenter.isRequestsCanceled();
+
+		//requestsCanceled = mPresenter.isRequestsCanceled();
 	}
 
 	@Override

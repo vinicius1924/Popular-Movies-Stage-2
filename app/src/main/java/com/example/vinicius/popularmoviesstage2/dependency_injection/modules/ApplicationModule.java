@@ -18,6 +18,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import retrofit2.Retrofit;
 
 /**
  * Created by vinicius on 11/09/17.
@@ -80,9 +81,9 @@ public class ApplicationModule
 
 	@Provides
 	@Singleton
-	ApiHelper provideApiHelper()
+	ApiHelper provideApiHelper(Retrofit retrofit)
 	{
-		return new AppApiHelper<>();
+		return new AppApiHelper<>(retrofit);
 	}
 
 	@Provides
