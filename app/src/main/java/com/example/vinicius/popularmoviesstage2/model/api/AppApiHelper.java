@@ -3,6 +3,7 @@ package com.example.vinicius.popularmoviesstage2.model.api;
 import com.example.vinicius.popularmoviesstage2.model.api.base.ApiHelper;
 import com.example.vinicius.popularmoviesstage2.model.data_manager.IApiServices;
 
+import io.reactivex.Observable;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 
@@ -22,25 +23,25 @@ public class AppApiHelper<T> implements ApiHelper<T>
 	}
 
 	@Override
-	public Call<GetMoviesResponse> getPopularMovies()
+	public Observable<GetMoviesResponse> getPopularMovies()
 	{
 		return apiServices.getPopularMovies();
 	}
 
 	@Override
-	public Call<GetMoviesResponse> getTopRatedMovies()
+	public Observable<GetMoviesResponse> getTopRatedMovies()
 	{
 		return apiServices.getTopRatedMovies();
 	}
 
 	@Override
-	public Call<GetVideosResponse> getMovieVideos(String id)
+	public Observable<GetVideosResponse> getMovieVideos(String id)
 	{
 		return apiServices.getMovieVideos(id);
 	}
 
 	@Override
-	public Call<GetReviewsResponse> getMovieReviews(String id)
+	public Observable<GetReviewsResponse> getMovieReviews(String id)
 	{
 		return apiServices.getMovieReviews(id);
 	}

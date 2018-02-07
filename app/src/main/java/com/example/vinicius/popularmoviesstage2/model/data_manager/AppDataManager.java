@@ -14,6 +14,7 @@ import com.example.vinicius.popularmoviesstage2.model.preferences.base.Preferenc
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import io.reactivex.Observable;
 import retrofit2.Call;
 
 /**
@@ -54,25 +55,25 @@ public class AppDataManager implements DataManager
 	}
 
 	@Override
-	public Call<GetMoviesResponse> getPopularMovies()
+	public Observable<GetMoviesResponse> getPopularMovies()
 	{
 		return mApiHelper.getPopularMovies();
 	}
 
 	@Override
-	public Call<GetMoviesResponse> getTopRatedMovies()
+	public Observable<GetMoviesResponse> getTopRatedMovies()
 	{
 		return mApiHelper.getTopRatedMovies();
 	}
 
 	@Override
-	public Call<GetVideosResponse> getMovieVideos(String id)
+	public Observable<GetVideosResponse> getMovieVideos(String id)
 	{
 		return mApiHelper.getMovieVideos(id);
 	}
 
 	@Override
-	public Call<GetReviewsResponse> getMovieReviews(String id)
+	public Observable<GetReviewsResponse> getMovieReviews(String id)
 	{
 		return mApiHelper.getMovieReviews(id);
 	}

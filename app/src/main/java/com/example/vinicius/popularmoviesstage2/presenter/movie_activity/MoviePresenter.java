@@ -7,26 +7,25 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.example.vinicius.popularmoviesstage2.DTO.MovieDTO;
 import com.example.vinicius.popularmoviesstage2.R;
-import com.example.vinicius.popularmoviesstage2.RequestQueueSingleton;
 import com.example.vinicius.popularmoviesstage2.dependency_injection.PerActivity;
 import com.example.vinicius.popularmoviesstage2.model.data_manager.base.DataManager;
 import com.example.vinicius.popularmoviesstage2.presenter.base.BasePresenter;
 import com.example.vinicius.popularmoviesstage2.model.api.GetReviewsResponse;
 import com.example.vinicius.popularmoviesstage2.model.api.GetVideosResponse;
 import com.example.vinicius.popularmoviesstage2.utils.NetworkUtils;
-import com.example.vinicius.popularmoviesstage2.utils.VolleyUtils;
 import com.example.vinicius.popularmoviesstage2.view.movie_activity.MovieActivity;
 import com.example.vinicius.popularmoviesstage2.view.movie_activity.MovieMvpView;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import retrofit2.Call;
-import retrofit2.Callback;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by vinicius on 18/09/17.
@@ -39,8 +38,12 @@ public class MoviePresenter<V extends MovieMvpView> extends BasePresenter<V> imp
 	@Named("ApplicationContext") Context applicationContext;
 	private MovieDTO movieDTO;
 	AppCompatActivity activity;
-	private Call<GetVideosResponse> callGetMovieVideos;
-	private Call<GetReviewsResponse> callGetMovieReviews;
+	private Observable<GetVideosResponse> callGetMovieVideos;
+	private Observable<GetReviewsResponse> callGetMovieReviews;
+	/*
+	 * Coleta todos os subscriptions para fazer unsubscribe depois
+	 */
+	private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
 
 	@Inject
 	public MoviePresenter(@Named("ActivityContext")Context context,
@@ -69,20 +72,30 @@ public class MoviePresenter<V extends MovieMvpView> extends BasePresenter<V> imp
 		{
 			callGetMovieVideos = getDataManager().getMovieVideos(String.valueOf(id));
 
-			callGetMovieVideos.enqueue(new Callback<GetVideosResponse>()
-			{
-				@Override
-				public void onResponse(Call<GetVideosResponse> call, retrofit2.Response<GetVideosResponse> response)
+			/*
+			 * subscribeOn(Schedulers.io()) - diz que o Observable(que representa a fonte de dados) fará seu
+			 * trabalho fora da thread principal
+			 *
+			 * observeOn(AndroidSchedulers.mainThread()) - diz que o Observer(aquele que se inscreve em um Observable
+			 * para receber os dados) irá receber os dados do Observable na thread principal
+			 */
+			mCompositeDisposable.add(callGetMovieVideos.subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new Consumer<GetVideosResponse>()
 				{
-					getMvpView().loadMovieTrailersResponse(response.body());
-				}
-
-				@Override
-				public void onFailure(Call<GetVideosResponse> call, Throwable t)
+				  @Override
+				  public void accept(GetVideosResponse getVideosResponse) throws Exception
+				  {
+					  getMvpView().loadMovieTrailersResponse(getVideosResponse);
+				  }
+				}, new Consumer<Throwable>()
 				{
-					Log.e(MovieActivity.MOVIEACTIVITYTAG, t.getLocalizedMessage());
-				}
-			});
+				  @Override
+				  public void accept(Throwable throwable) throws Exception
+				  {
+					  Log.e(MovieActivity.MOVIEACTIVITYTAG, throwable.getLocalizedMessage());
+				  }
+				}));
 		}
 		else
 		{
@@ -99,89 +112,27 @@ public class MoviePresenter<V extends MovieMvpView> extends BasePresenter<V> imp
 		{
 			callGetMovieReviews = getDataManager().getMovieReviews(String.valueOf(id));
 
-			callGetMovieReviews.enqueue(new Callback<GetReviewsResponse>()
-			{
-				@Override
-				public void onResponse(Call<GetReviewsResponse> call, retrofit2.Response<GetReviewsResponse> response)
+			mCompositeDisposable.add(callGetMovieReviews.subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new Consumer<GetReviewsResponse>()
 				{
-					getMvpView().loadMovieReviewsResponse(response.body());
-				}
-
-				@Override
-				public void onFailure(Call<GetReviewsResponse> call, Throwable t)
+					@Override
+					public void accept(GetReviewsResponse getReviewsResponse) throws Exception
+					{
+						getMvpView().loadMovieReviewsResponse(getReviewsResponse);
+					}
+				}, new Consumer<Throwable>()
 				{
-					Log.e(MovieActivity.MOVIEACTIVITYTAG, t.getLocalizedMessage());
-				}
-			});
+					@Override
+					public void accept(Throwable throwable) throws Exception
+					{
+						Log.e(MovieActivity.MOVIEACTIVITYTAG, throwable.getLocalizedMessage());
+					}
+				}));
 		}
 		else
 		{
 			getMvpView().showSnackBar(context.getResources().getString(R.string.no_internet_connection));
-		}
-	}
-
-	@Override
-	public boolean isTrailersRequestsCanceled()
-	{
-		try
-		{
-			int numberOfRequests = VolleyUtils.getNumberOfRequestsInQueue(applicationContext);
-
-			if(numberOfRequests > 0)
-			{
-				if(VolleyUtils.isPendingToRequest(applicationContext, MovieActivity.TRAILERSREQUESTTAG))
-				{
-					RequestQueueSingleton.getInstance(applicationContext).getRequestQueue().cancelAll(
-							  MovieActivity.TRAILERSREQUESTTAG);
-					return true;
-				}
-				else
-				{
-					return false;
-				}
-			}
-			else
-			{
-				return false;
-			}
-		}
-		catch(NoSuchFieldException e)
-		{
-			Log.e(MovieActivity.MOVIEACTIVITYTAG, e.toString());
-			return false;
-		}
-	}
-
-	@Override
-	public boolean isReviewsRequestsCanceled()
-	{
-		try
-		{
-			int numberOfRequests = VolleyUtils.getNumberOfRequestsInQueue(applicationContext);
-
-			if(numberOfRequests > 0)
-			{
-				if(VolleyUtils.isPendingToRequest(applicationContext, MovieActivity.REVIEWSREQUESTTAG))
-				{
-					RequestQueueSingleton.getInstance(applicationContext).getRequestQueue().cancelAll(
-							  MovieActivity.REVIEWSREQUESTTAG);
-
-					return true;
-				}
-				else
-				{
-					return false;
-				}
-			}
-			else
-			{
-				return false;
-			}
-		}
-		catch(NoSuchFieldException e)
-		{
-			Log.e(MovieActivity.MOVIEACTIVITYTAG, e.toString());
-			return false;
 		}
 	}
 
@@ -201,5 +152,11 @@ public class MoviePresenter<V extends MovieMvpView> extends BasePresenter<V> imp
 	public Cursor findMovieById(long id)
 	{
 		return getDataManager().queryMovieById(id);
+	}
+
+	@Override
+	public void onDestroy()
+	{
+		mCompositeDisposable.clear();
 	}
 }

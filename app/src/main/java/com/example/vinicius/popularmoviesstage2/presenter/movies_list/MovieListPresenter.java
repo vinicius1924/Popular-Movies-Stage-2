@@ -7,12 +7,8 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.example.vinicius.popularmoviesstage2.DTO.MovieDTO;
 import com.example.vinicius.popularmoviesstage2.view.movie_activity.MovieActivity;
-import com.example.vinicius.popularmoviesstage2.RequestQueueSingleton;
-import com.example.vinicius.popularmoviesstage2.utils.VolleyUtils;
 import com.example.vinicius.popularmoviesstage2.view.movies_list_activity.MoviesListActivity;
 import com.example.vinicius.popularmoviesstage2.R;
 import com.example.vinicius.popularmoviesstage2.model.data_manager.base.DataManager;
@@ -25,8 +21,11 @@ import com.example.vinicius.popularmoviesstage2.view.movies_list_activity.Movies
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import retrofit2.Call;
-import retrofit2.Callback;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by vinicius on 12/09/17.
@@ -38,8 +37,12 @@ public class MovieListPresenter<V extends MoviesListMvpView> extends BasePresent
 {
 	@Named("ActivityContext")Context context;
 	AppCompatActivity activity;
-	private Call<GetMoviesResponse> callPopularMoviesResponse = null;
-	private Call<GetMoviesResponse> callTopRatedMoviesResponse = null;
+	private Observable<GetMoviesResponse> callPopularMoviesResponse = null;
+	private Observable<GetMoviesResponse> callTopRatedMoviesResponse = null;
+	/*
+	 * Coleta todos os subscriptions para fazer unsubscribe depois
+	 */
+	private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
 
 
 	@Inject
@@ -62,20 +65,30 @@ public class MovieListPresenter<V extends MoviesListMvpView> extends BasePresent
 			{
 				callPopularMoviesResponse = getDataManager().getPopularMovies();
 
-				callPopularMoviesResponse.enqueue(new Callback<GetMoviesResponse>()
-				{
-					@Override
-					public void onResponse(Call<GetMoviesResponse> call, retrofit2.Response<GetMoviesResponse> response)
+				/*
+				 * subscribeOn(Schedulers.io()) - diz que o Observable(que representa a fonte de dados) fará seu
+				 * trabalho fora da thread principal
+				 *
+				 * observeOn(AndroidSchedulers.mainThread()) - diz que o Observer(aquele que se inscreve em um Observable
+				 * para receber os dados) irá receber os dados do Observable na thread principal
+				 */
+				mCompositeDisposable.add(callPopularMoviesResponse.subscribeOn(Schedulers.io())
+					.observeOn(AndroidSchedulers.mainThread())
+					.subscribe(new Consumer<GetMoviesResponse>()
 					{
-						getMvpView().getPopularMoviesResponse(response.body());
-					}
-
-					@Override
-					public void onFailure(Call<GetMoviesResponse> call, Throwable t)
+						@Override
+						public void accept(GetMoviesResponse getMoviesResponse) throws Exception
+						{
+							getMvpView().getPopularMoviesResponse(getMoviesResponse);
+						}
+					}, new Consumer<Throwable>()
 					{
-						Log.e(((MoviesListActivity)getMvpView()).MOVIESLISTACTIVITYTAG, t.getLocalizedMessage());
-					}
-				});
+						@Override
+						public void accept(Throwable throwable) throws Exception
+						{
+							Log.e(((MoviesListActivity)getMvpView()).MOVIESLISTACTIVITYTAG, throwable.getLocalizedMessage());
+						}
+					}));
 			}
 			else
 			{
@@ -92,20 +105,23 @@ public class MovieListPresenter<V extends MoviesListMvpView> extends BasePresent
 			{
 				callTopRatedMoviesResponse = getDataManager().getTopRatedMovies();
 
-				callTopRatedMoviesResponse.enqueue(new Callback<GetMoviesResponse>()
-				{
-					@Override
-					public void onResponse(Call<GetMoviesResponse> call, retrofit2.Response<GetMoviesResponse> response)
+				mCompositeDisposable.add(callTopRatedMoviesResponse.subscribeOn(Schedulers.io())
+					.observeOn(AndroidSchedulers.mainThread())
+					.subscribe(new Consumer<GetMoviesResponse>()
 					{
-						getMvpView().getTopRatedMoviesResponse(response.body());
-					}
-
-					@Override
-					public void onFailure(Call<GetMoviesResponse> call, Throwable t)
+						@Override
+						public void accept(GetMoviesResponse getMoviesResponse) throws Exception
+						{
+							getMvpView().getTopRatedMoviesResponse(getMoviesResponse);
+						}
+					}, new Consumer<Throwable>()
 					{
-						Log.e(((MoviesListActivity)getMvpView()).MOVIESLISTACTIVITYTAG, t.getLocalizedMessage());
-					}
-				});
+						@Override
+						public void accept(Throwable throwable) throws Exception
+						{
+							Log.e(((MoviesListActivity)getMvpView()).MOVIESLISTACTIVITYTAG, throwable.getLocalizedMessage());
+						}
+					}));
 			}
 			else
 			{
@@ -144,32 +160,6 @@ public class MovieListPresenter<V extends MoviesListMvpView> extends BasePresent
 	}
 
 	@Override
-	public boolean isRequestsCanceled()
-	{
-		try
-		{
-			int numberOfRequests = VolleyUtils.getNumberOfRequestsInQueue(context.getApplicationContext());
-
-			if(numberOfRequests > 0)
-			{
-				RequestQueueSingleton.getInstance(context.getApplicationContext()).getRequestQueue().
-						  cancelAll(MoviesListActivity.MOVIESLISTACTIVITYTAG);
-
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
-		catch(NoSuchFieldException e)
-		{
-			Log.e(MoviesListActivity.MOVIESLISTACTIVITYTAG, e.toString());
-			return false;
-		}
-	}
-
-	@Override
 	public void onMenuOptionItemSelected(String orderBy)
 	{
 		getDataManager().setMoviesSortBy(orderBy);
@@ -197,5 +187,9 @@ public class MovieListPresenter<V extends MoviesListMvpView> extends BasePresent
 		context.startActivity(i);
 	}
 
-
+	@Override
+	public void onDestroy()
+	{
+		mCompositeDisposable.clear();
+	}
 }

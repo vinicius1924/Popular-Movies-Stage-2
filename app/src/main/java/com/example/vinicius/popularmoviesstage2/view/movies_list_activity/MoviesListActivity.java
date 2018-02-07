@@ -7,6 +7,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -41,7 +42,6 @@ public class MoviesListActivity extends BaseActivity implements MoviesPostersRec
 	private CoordinatorLayout coordinatorLayout;
 	private List<MovieDTO> moviesList = new ArrayList<MovieDTO>();
 	public static final String MOVIESLISTACTIVITYTAG = "MoviesListActivity";
-	private boolean requestsCanceled = false;
 	private Toolbar toolbar;
 	private Snackbar snackbar;
 	private TextView noFavoritesTextView;
@@ -76,6 +76,7 @@ public class MoviesListActivity extends BaseActivity implements MoviesPostersRec
 		/* Adapter usado pelo recycler view para mostrar os dados do SQLite utilizando um cursor  */
 		favoritesRecyclerAdapter = new FavoritesRecyclerAdapter(this.getApplicationContext(), null, 0, this);
 
+		Log.d("MoviesListActivity", "onCreate()");
 		mPresenter.loadMoviesByPreference(mPresenter.getMenuOptionItemSelected());
 	}
 
@@ -83,11 +84,6 @@ public class MoviesListActivity extends BaseActivity implements MoviesPostersRec
 	protected void onStart()
 	{
 		super.onStart();
-
-		if(requestsCanceled)
-		{
-			mPresenter.loadMoviesByPreference(mPresenter.getMenuOptionItemSelected());
-		}
 	}
 
 	@Override
@@ -100,15 +96,13 @@ public class MoviesListActivity extends BaseActivity implements MoviesPostersRec
 	protected void onStop()
 	{
 		super.onStop();
-
-
-		//requestsCanceled = mPresenter.isRequestsCanceled();
 	}
 
 	@Override
 	protected void onDestroy()
 	{
 		mPresenter.unregisterView();
+		mPresenter.onDestroy();
 		super.onDestroy();
 	}
 

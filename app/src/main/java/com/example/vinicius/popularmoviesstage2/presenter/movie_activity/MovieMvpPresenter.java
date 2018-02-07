@@ -15,9 +15,10 @@ public interface MovieMvpPresenter<V extends MovieMvpView> extends MvpPresenter<
 	void onCreate();
 	void loadMovieTrailers(long id);
 	void loadMovieReviews(long id);
-	boolean isTrailersRequestsCanceled();
-	boolean isReviewsRequestsCanceled();
+//	boolean isTrailersRequestsCanceled();
+//	boolean isReviewsRequestsCanceled();
 	void deleteMovieFromLocalDatabase(long id, String posterPath);
 	void addMovieToLocalDatabase(MovieDTO movieDTO);
 	Cursor findMovieById(long id);
+	void onDestroy();
 }
