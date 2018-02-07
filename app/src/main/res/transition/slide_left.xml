@@ -5,5 +5,5 @@
  -->
 <slide xmlns:android="http://schemas.android.com/apk/res/android"
        android:slideEdge="left"
-       android:duration="5000">
+       android:duration="375">
 </slide>
