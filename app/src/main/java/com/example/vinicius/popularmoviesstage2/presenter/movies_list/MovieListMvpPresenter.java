@@ -16,7 +16,6 @@ public interface MovieListMvpPresenter<V extends MoviesListMvpView> extends MvpP
 {
 	void loadMoviesByPreference(String preference);
 	int recyclerViewNumberOfColumns();
-	//boolean isRequestsCanceled();
 	void onMenuOptionItemSelected(String orderBy);
 	String getMenuOptionItemSelected();
 	void onRecyclerViewItemClick(MovieDTO movieDTO);

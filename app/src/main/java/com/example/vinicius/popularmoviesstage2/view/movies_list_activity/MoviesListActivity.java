@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 
@@ -45,6 +46,7 @@ public class MoviesListActivity extends BaseActivity implements MoviesPostersRec
 	private Toolbar toolbar;
 	private Snackbar snackbar;
 	private TextView noFavoritesTextView;
+	private ProgressBar progressBar;
 
 	@Inject
 	MovieListMvpPresenter<MoviesListMvpView> mPresenter;
@@ -62,6 +64,7 @@ public class MoviesListActivity extends BaseActivity implements MoviesPostersRec
 		toolbar = (Toolbar) findViewById(R.id.toolbar);
 		coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
 		noFavoritesTextView = (TextView) findViewById(R.id.noFavoritesTextView);
+		progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
 		setSupportActionBar(toolbar);
 
@@ -260,5 +263,17 @@ public class MoviesListActivity extends BaseActivity implements MoviesPostersRec
 
 		snackbar.setDuration(Snackbar.LENGTH_INDEFINITE);
 		snackbar.show();
+	}
+
+	@Override
+	public void showProgressBar()
+	{
+		progressBar.setVisibility(View.VISIBLE);
+	}
+
+	@Override
+	public void hideProgressBar()
+	{
+		progressBar.setVisibility(View.INVISIBLE);
 	}
 }

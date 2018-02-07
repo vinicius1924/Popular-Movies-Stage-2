@@ -56,6 +56,8 @@ public class MovieListPresenter<V extends MoviesListMvpView> extends BasePresent
 	@Override
 	public void loadMoviesByPreference(String preference)
 	{
+		getMvpView().showProgressBar();
+
 		if(preference.equals(context.getResources().getString(R.string.first_pref_list_entry)))
 		{
 			getMvpView().noFavoritesTextViewVisibility(View.INVISIBLE);
@@ -79,6 +81,7 @@ public class MovieListPresenter<V extends MoviesListMvpView> extends BasePresent
 						@Override
 						public void accept(GetMoviesResponse getMoviesResponse) throws Exception
 						{
+							getMvpView().hideProgressBar();
 							getMvpView().getPopularMoviesResponse(getMoviesResponse);
 						}
 					}, new Consumer<Throwable>()
@@ -86,12 +89,14 @@ public class MovieListPresenter<V extends MoviesListMvpView> extends BasePresent
 						@Override
 						public void accept(Throwable throwable) throws Exception
 						{
+							getMvpView().hideProgressBar();
 							Log.e(((MoviesListActivity)getMvpView()).MOVIESLISTACTIVITYTAG, throwable.getLocalizedMessage());
 						}
 					}));
 			}
 			else
 			{
+				getMvpView().hideProgressBar();
 				getMvpView().showSnackBar(context.getResources().getString(R.string.no_internet_connection));
 			}
 		}
@@ -112,6 +117,7 @@ public class MovieListPresenter<V extends MoviesListMvpView> extends BasePresent
 						@Override
 						public void accept(GetMoviesResponse getMoviesResponse) throws Exception
 						{
+							getMvpView().hideProgressBar();
 							getMvpView().getTopRatedMoviesResponse(getMoviesResponse);
 						}
 					}, new Consumer<Throwable>()
@@ -119,18 +125,21 @@ public class MovieListPresenter<V extends MoviesListMvpView> extends BasePresent
 						@Override
 						public void accept(Throwable throwable) throws Exception
 						{
+							getMvpView().hideProgressBar();
 							Log.e(((MoviesListActivity)getMvpView()).MOVIESLISTACTIVITYTAG, throwable.getLocalizedMessage());
 						}
 					}));
 			}
 			else
 			{
+				getMvpView().hideProgressBar();
 				getMvpView().showSnackBar(context.getResources().getString(R.string.no_internet_connection));
 			}
 		}
 
 		if(preference.equals(context.getResources().getString(R.string.third_pref_list_entry)))
 		{
+			getMvpView().hideProgressBar();
 			getMvpView().changeAdapterAccordingToPreference(preference);
 		}
 	}
