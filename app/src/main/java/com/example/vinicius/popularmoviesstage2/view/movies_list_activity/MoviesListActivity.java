@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 
@@ -45,10 +46,10 @@ public class MoviesListActivity extends BaseActivity implements MoviesPostersRec
 	private CoordinatorLayout coordinatorLayout;
 	private List<MovieDTO> moviesList = new ArrayList<MovieDTO>();
 	public static final String MOVIESLISTACTIVITYTAG = "MoviesListActivity";
-	private boolean requestsCanceled = false;
 	private Toolbar toolbar;
 	private Snackbar snackbar;
 	private TextView noFavoritesTextView;
+	private ProgressBar progressBar;
 
 	@Inject
 	MovieListMvpPresenter<MoviesListMvpView> mPresenter;
@@ -66,6 +67,7 @@ public class MoviesListActivity extends BaseActivity implements MoviesPostersRec
 		toolbar = (Toolbar) findViewById(R.id.toolbar);
 		coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
 		noFavoritesTextView = (TextView) findViewById(R.id.noFavoritesTextView);
+		progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
 		setSupportActionBar(toolbar);
 
@@ -93,6 +95,7 @@ public class MoviesListActivity extends BaseActivity implements MoviesPostersRec
 		/* Adapter usado pelo recycler view para mostrar os dados do SQLite utilizando um cursor  */
 		favoritesRecyclerAdapter = new FavoritesRecyclerAdapter(this.getApplicationContext(), null, 0, this);
 
+		Log.d("MoviesListActivity", "onCreate()");
 		mPresenter.loadMoviesByPreference(mPresenter.getMenuOptionItemSelected());
 	}
 
@@ -100,11 +103,6 @@ public class MoviesListActivity extends BaseActivity implements MoviesPostersRec
 	protected void onStart()
 	{
 		super.onStart();
-
-		if(requestsCanceled)
-		{
-			mPresenter.loadMoviesByPreference(mPresenter.getMenuOptionItemSelected());
-		}
 	}
 
 	@Override
@@ -117,14 +115,13 @@ public class MoviesListActivity extends BaseActivity implements MoviesPostersRec
 	protected void onStop()
 	{
 		super.onStop();
-
-		requestsCanceled = mPresenter.isRequestsCanceled();
 	}
 
 	@Override
 	protected void onDestroy()
 	{
 		mPresenter.unregisterView();
+		mPresenter.onDestroy();
 		super.onDestroy();
 	}
 
@@ -285,5 +282,17 @@ public class MoviesListActivity extends BaseActivity implements MoviesPostersRec
 
 		snackbar.setDuration(Snackbar.LENGTH_INDEFINITE);
 		snackbar.show();
+	}
+
+	@Override
+	public void showProgressBar()
+	{
+		progressBar.setVisibility(View.VISIBLE);
+	}
+
+	@Override
+	public void hideProgressBar()
+	{
+		progressBar.setVisibility(View.INVISIBLE);
 	}
 }

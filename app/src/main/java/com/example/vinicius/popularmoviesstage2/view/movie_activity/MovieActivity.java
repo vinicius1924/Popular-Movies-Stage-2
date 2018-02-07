@@ -71,11 +71,7 @@ public class MovieActivity extends BaseActivity implements View.OnClickListener,
 	private ProgressBar progressBarReviews;
 	private View shadowView;
 	public static final String MOVIEACTIVITYTAG = "MovieActivity";
-	public static final String TRAILERSREQUESTTAG = "TRAILERS";
-	public static final String REVIEWSREQUESTTAG = "REVIEWS";
 	private MovieDTO movieDTO;
-	private boolean requestTrailersCanceled = false;
-	private boolean requestReviewsCanceled = false;
 	private LinearLayout linearLayoutTrailers;
 	private LinearLayout linearLayoutReviews;
 	private List<String> youtubeTrailers = new ArrayList<String>();
@@ -208,8 +204,6 @@ public class MovieActivity extends BaseActivity implements View.OnClickListener,
 		movieSynopsis.setText(movieDTO.getOverview());
 
 		Cursor movieCursor = mPresenter.findMovieById(movieDTO.getId());
-		//		Cursor movieCursor = getContentResolver().query(Uri.withAppendedPath(MovieContract.MovieEntry.CONTENT_URI,
-		//				  String.valueOf(movieDTO.getId())), new String[]{MovieContract.MovieEntry._ID}, null, null, null);
 
 		if(movieCursor.moveToFirst())
 		{
@@ -256,31 +250,19 @@ public class MovieActivity extends BaseActivity implements View.OnClickListener,
 	protected void onStart()
 	{
 		super.onStart();
-
-		if(requestTrailersCanceled)
-		{
-			mPresenter.loadMovieTrailers(movieDTO.getId());
-		}
-
-		if(requestReviewsCanceled)
-		{
-			mPresenter.loadMovieReviews(movieDTO.getId());
-		}
 	}
 
 	@Override
 	protected void onStop()
 	{
 		super.onStop();
-
-		requestTrailersCanceled = mPresenter.isTrailersRequestsCanceled();
-		requestReviewsCanceled = mPresenter.isReviewsRequestsCanceled();
 	}
 
 	@Override
 	protected void onDestroy()
 	{
 		mPresenter.unregisterView();
+		mPresenter.onDestroy();
 		super.onDestroy();
 	}
 
@@ -319,7 +301,6 @@ public class MovieActivity extends BaseActivity implements View.OnClickListener,
 				else
 				{
 					showToast(getResources().getString(R.string.no_trailer_share));
-					//Toast.makeText(this, getResources().getString(R.string.no_trailer_share), Toast.LENGTH_SHORT);
 				}
 
 				break;
@@ -354,22 +335,15 @@ public class MovieActivity extends BaseActivity implements View.OnClickListener,
 					if(view.isSelected())
 					{
 						floatActionButtonSelected(false);
-						//view.setSelected(false);
-						mPresenter.deleteMovieFromLocalDatabase(movieDTO.getId(), movieDTO.getPoster(getResources()
-								  .getBoolean(R.bool.smallestWidth600), getResources().getBoolean(R.bool.smallestWidth720)));
 
-						//						deleteMovieFromLocalDatabase(movieDTO.getId(), movieDTO.getPoster(getResources()
-						// .getBoolean(R.bool.smallestWidth600),
-						//								  getResources().getBoolean(R.bool.smallestWidth720)));
+						mPresenter.deleteMovieFromLocalDatabase(movieDTO.getId(), movieDTO.getPoster(getResources().getBoolean(R.bool.smallestWidth600),
+								  getResources().getBoolean(R.bool.smallestWidth720)));
 					}
 					else
 					{
 						floatActionButtonSelected(true);
-						//view.setSelected(true);
 
 						mPresenter.addMovieToLocalDatabase(movieDTO.clone());
-
-						//addMovieToLocalDatabase(movieDTO.clone());
 					}
 					break;
 

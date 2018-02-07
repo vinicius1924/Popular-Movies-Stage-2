@@ -12,12 +12,8 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.example.vinicius.popularmoviesstage2.DTO.MovieDTO;
 import com.example.vinicius.popularmoviesstage2.view.movie_activity.MovieActivity;
-import com.example.vinicius.popularmoviesstage2.RequestQueueSingleton;
-import com.example.vinicius.popularmoviesstage2.utils.VolleyUtils;
 import com.example.vinicius.popularmoviesstage2.view.movies_list_activity.MoviesListActivity;
 import com.example.vinicius.popularmoviesstage2.R;
 import com.example.vinicius.popularmoviesstage2.model.data_manager.base.DataManager;
@@ -31,6 +27,11 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import static com.example.vinicius.popularmoviesstage2.utils.View.captureValues;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by vinicius on 12/09/17.
@@ -42,6 +43,12 @@ public class MovieListPresenter<V extends MoviesListMvpView> extends BasePresent
 {
 	@Named("ActivityContext")Context context;
 	AppCompatActivity activity;
+	private Observable<GetMoviesResponse> callPopularMoviesResponse = null;
+	private Observable<GetMoviesResponse> callTopRatedMoviesResponse = null;
+	/*
+	 * Coleta todos os subscriptions para fazer unsubscribe depois
+	 */
+	private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
 
 
 	@Inject
@@ -55,37 +62,47 @@ public class MovieListPresenter<V extends MoviesListMvpView> extends BasePresent
 	@Override
 	public void loadMoviesByPreference(String preference)
 	{
+		getMvpView().showProgressBar();
+
 		if(preference.equals(context.getResources().getString(R.string.first_pref_list_entry)))
 		{
 			getMvpView().noFavoritesTextViewVisibility(View.INVISIBLE);
 			getMvpView().changeAdapterAccordingToPreference(preference);
 
-
-			final Response.Listener<GetMoviesResponse> successResponseRequestListener = new Response.Listener<GetMoviesResponse>()
-			{
-				@Override
-				public void onResponse(GetMoviesResponse response)
-				{
-					getMvpView().getPopularMoviesResponse(response);
-				}
-			};
-
-			final Response.ErrorListener errorResponseRequestListener = new Response.ErrorListener()
-			{
-				@Override
-				public void onErrorResponse(VolleyError error)
-				{
-					Log.e(((MoviesListActivity)getMvpView()).MOVIESLISTACTIVITYTAG, error.getLocalizedMessage());
-				}
-			};
-
 			if(NetworkUtils.isOnline(context))
 			{
-				getDataManager().GetPopularMovies(successResponseRequestListener, errorResponseRequestListener,
-						  GetMoviesResponse.class, context, ((MoviesListActivity)getMvpView()).MOVIESLISTACTIVITYTAG);
+				callPopularMoviesResponse = getDataManager().getPopularMovies();
+
+				/*
+				 * subscribeOn(Schedulers.io()) - diz que o Observable(que representa a fonte de dados) fará seu
+				 * trabalho fora da thread principal
+				 *
+				 * observeOn(AndroidSchedulers.mainThread()) - diz que o Observer(aquele que se inscreve em um Observable
+				 * para receber os dados) irá receber os dados do Observable na thread principal
+				 */
+				mCompositeDisposable.add(callPopularMoviesResponse.subscribeOn(Schedulers.io())
+					.observeOn(AndroidSchedulers.mainThread())
+					.subscribe(new Consumer<GetMoviesResponse>()
+					{
+						@Override
+						public void accept(GetMoviesResponse getMoviesResponse) throws Exception
+						{
+							getMvpView().hideProgressBar();
+							getMvpView().getPopularMoviesResponse(getMoviesResponse);
+						}
+					}, new Consumer<Throwable>()
+					{
+						@Override
+						public void accept(Throwable throwable) throws Exception
+						{
+							getMvpView().hideProgressBar();
+							Log.e(((MoviesListActivity)getMvpView()).MOVIESLISTACTIVITYTAG, throwable.getLocalizedMessage());
+						}
+					}));
 			}
 			else
 			{
+				getMvpView().hideProgressBar();
 				getMvpView().showSnackBar(context.getResources().getString(R.string.no_internet_connection));
 			}
 		}
@@ -95,37 +112,40 @@ public class MovieListPresenter<V extends MoviesListMvpView> extends BasePresent
 			getMvpView().noFavoritesTextViewVisibility(View.INVISIBLE);
 			getMvpView().changeAdapterAccordingToPreference(preference);
 
-			final Response.Listener<GetMoviesResponse> successResponseRequestListener = new Response.Listener<GetMoviesResponse>()
-			{
-				@Override
-				public void onResponse(GetMoviesResponse response)
-				{
-					getMvpView().getTopRatedMoviesResponse(response);
-				}
-			};
-
-			final Response.ErrorListener errorResponseRequestListener = new Response.ErrorListener()
-			{
-				@Override
-				public void onErrorResponse(VolleyError error)
-				{
-					Log.e(((MoviesListActivity)getMvpView()).MOVIESLISTACTIVITYTAG, error.getLocalizedMessage());
-				}
-			};
-
 			if(NetworkUtils.isOnline(context))
 			{
-				getDataManager().GetTopRatedMovies(successResponseRequestListener, errorResponseRequestListener,
-						  GetMoviesResponse.class, context, ((MoviesListActivity)getMvpView()).MOVIESLISTACTIVITYTAG);
+				callTopRatedMoviesResponse = getDataManager().getTopRatedMovies();
+
+				mCompositeDisposable.add(callTopRatedMoviesResponse.subscribeOn(Schedulers.io())
+					.observeOn(AndroidSchedulers.mainThread())
+					.subscribe(new Consumer<GetMoviesResponse>()
+					{
+						@Override
+						public void accept(GetMoviesResponse getMoviesResponse) throws Exception
+						{
+							getMvpView().hideProgressBar();
+							getMvpView().getTopRatedMoviesResponse(getMoviesResponse);
+						}
+					}, new Consumer<Throwable>()
+					{
+						@Override
+						public void accept(Throwable throwable) throws Exception
+						{
+							getMvpView().hideProgressBar();
+							Log.e(((MoviesListActivity)getMvpView()).MOVIESLISTACTIVITYTAG, throwable.getLocalizedMessage());
+						}
+					}));
 			}
 			else
 			{
+				getMvpView().hideProgressBar();
 				getMvpView().showSnackBar(context.getResources().getString(R.string.no_internet_connection));
 			}
 		}
 
 		if(preference.equals(context.getResources().getString(R.string.third_pref_list_entry)))
 		{
+			getMvpView().hideProgressBar();
 			getMvpView().changeAdapterAccordingToPreference(preference);
 		}
 	}
@@ -136,7 +156,6 @@ public class MovieListPresenter<V extends MoviesListMvpView> extends BasePresent
 		DisplayMetrics displayMetrics = new DisplayMetrics();
 		activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
 		// Esse valor deve ser ajustado de acordo com a largura do poster que será mostrado
-
 		int widthDivider = 185;
 
 		if(context.getResources().getBoolean(R.bool.smallestWidth600))
@@ -153,32 +172,6 @@ public class MovieListPresenter<V extends MoviesListMvpView> extends BasePresent
 		int nColumns = width / widthDivider;
 		if (nColumns < 2) return 2;
 		return nColumns;
-	}
-
-	@Override
-	public boolean isRequestsCanceled()
-	{
-		try
-		{
-			int numberOfRequests = VolleyUtils.getNumberOfRequestsInQueue(context.getApplicationContext());
-
-			if(numberOfRequests > 0)
-			{
-				RequestQueueSingleton.getInstance(context.getApplicationContext()).getRequestQueue().
-						  cancelAll(MoviesListActivity.MOVIESLISTACTIVITYTAG);
-
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
-		catch(NoSuchFieldException e)
-		{
-			Log.e(MoviesListActivity.MOVIESLISTACTIVITYTAG, e.toString());
-			return false;
-		}
 	}
 
 	@Override
@@ -239,5 +232,9 @@ public class MovieListPresenter<V extends MoviesListMvpView> extends BasePresent
 		}
 	}
 
-
+	@Override
+	public void onDestroy()
+	{
+		mCompositeDisposable.clear();
+	}
 }

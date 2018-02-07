@@ -18,4 +18,6 @@ public interface MoviesListMvpView extends MvpView
 	void getPopularMoviesResponse(GetMoviesResponse response);
 	void getTopRatedMoviesResponse(GetMoviesResponse response);
 	void showSnackBar(String message);
+	void showProgressBar();
+	void hideProgressBar();
 }
