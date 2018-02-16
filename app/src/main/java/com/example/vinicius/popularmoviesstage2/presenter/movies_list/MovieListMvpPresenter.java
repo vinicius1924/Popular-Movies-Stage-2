@@ -14,6 +14,11 @@ import com.example.vinicius.popularmoviesstage2.view.movies_list_activity.Movies
 /*
  * Esta interface deve ser implementada por MovieListPresenter e vai conter os métodos
  * que serão chamados pela view para se comunicar com o Presenter MovieListPresenter
+ *
+ * Como MovieListMvpPresenter extends a classe MvpPresenter e MvpPresenter tem que ser de
+ * algum tipo que extenda MvpView, a interface MovieListMvpPresenter tem que ser de algum
+ * tipo que extends MvpView. Nesse caso tem que ser do tipo MoviesListMvpView que é uma
+ * interface que extends MvpView
  */
 public interface MovieListMvpPresenter<V extends MoviesListMvpView> extends MvpPresenter<V>
 {
