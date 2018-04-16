@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    As animações na pasta anim servem para animar as views(View Animations).
+
+    Essas animações podem executar uma série de transformações simples(posição, tamanho, rotação e transparência)
+    no conteúdo de uma view. Então, se você tem um TextView você pode mover, rodar, aumentar ou diminuir o texto.
+    Se o TextView tem uma imagem de fundo, a imagem também será transformada junto com o texto.
+
+    As transformações podem ser sequenciais ou simultaneas, por exemplo, você pode ter o conteúdo de um TextView
+    se movendo da esquerda para a direita e depois rodar 180 graus, ou você pode ter o texto se movendo e rodando
+    simultaneamente.
+
+
+    Cada transformação tem um conjunto de parâmetros específicos para essa transformação(tamanho inicial
+    e tamanho final para mudança de tamanho, ângulo inicial e ângulo final para rotação, etc.) e também um conjunto
+    de parâmetros comuns(por exemplo, tempo de início e duração). Para fazer várias transformações ocorrer
+    simultaneamente, dê-lhes o mesmo tempo de início; para torná-los sequenciais, calcule o tempo de início mais a
+    duração da transformação anterior.
+
+    O arquivo deve ter apenas um elemento root: este elemento será ou um <alpha>, <scale>, <translate>, <rotate>,
+    interpolator element, ou um elemento <set> que contém grupos dos elementos citados anteriormente
+-->
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+     android:duration="@integer/anim_element_enter_screen">
+
+    <!--<translate-->
+        <!--android:interpolator="@android:anim/accelerate_decelerate_interpolator"-->
+        <!--android:fromYDelta="50%p"-->
+        <!--android:toYDelta="0"/>-->
+
+    <scale
+        android:interpolator="@android:anim/accelerate_decelerate_interpolator"
+        android:fromXScale="0"
+        android:toXScale="1"
+        android:fromYScale="0"
+        android:toYScale="1"
+        android:pivotX="50%"
+        android:pivotY="50%"/>
+
+    <alpha
+        android:fromAlpha="0"
+        android:toAlpha="1"
+        android:interpolator="@android:anim/accelerate_decelerate_interpolator"/>
+</set>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="anim_full_screen">375</integer>
+    <integer name="anim_element_enter_screen">225</integer>
+    <integer name="anim_element_leaving_screen">195</integer>
+</resources>

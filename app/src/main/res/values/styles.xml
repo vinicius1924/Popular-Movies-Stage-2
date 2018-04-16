@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
     <style name = "AppTheme" parent="AppTheme.Base">
@@ -13,6 +13,15 @@
         <item name="windowNoTitle">true</item>
         <!--<item name="buttonStyle">@style/Widget.AppCompat.Button.Colored</item>-->
         <item name="colorButtonNormal">@color/button_normal</item>
+    </style>
+    
+    <style name="AppTheme.MainActivity">
+    </style>
+
+    <style name="AppTheme.MovieActivity">
+        <!--<item name="android:windowIsTranslucent">true</item>-->
+        <!--<item name="android:windowBackground">@color/red_transparent</item>-->
+        <!--<item name="android:windowBackground">@android:color/transparent</item>-->
     </style>
 
 </resources>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Este é um LayoutAnimationController usado para animar filhos de um grid layout.
+     Enquanto LayoutAnimationController depende apenas do índice do filho no viewgroup
+     para calcular o atraso da animação, esta classe usa as coordenadas X e Y do filho
+     dentro de um grid.
+ -->
+<gridLayoutAnimation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:animation="@anim/item_animation_from_bottom"
+    android:animationOrder="normal"
+    android:columnDelay="15%"
+    android:rowDelay="15%"
+    android:direction="top_to_bottom|left_to_right">
+</gridLayoutAnimation>
